@@ -5,24 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - AgentCamp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { background: #0a0e1a; }</style>
 </head>
-<body style="background:#0a0e1a" class="min-h-screen text-white">
+<body class="text-white min-h-screen">
 
 {{-- NAVBAR --}}
 <nav class="flex items-center justify-between px-6 py-3 border-b border-white/10">
     <a href="/" class="text-green-400 text-base font-medium">&#9632; agentcamp</a>
     <div class="flex items-center gap-4">
         <a href="{{ route('katalog') }}" class="text-sm text-white/60 hover:text-white">Katalog</a>
-        <div class="relative group">
-            <button class="flex items-center gap-2 text-sm text-white/80 hover:text-white">
+        <div class="relative">
+            <button onclick="toggleDropdown()" class="flex items-center gap-2 text-sm text-white/80 hover:text-white">
                 <div class="w-7 h-7 rounded-full bg-green-400/20 border border-green-400/30 flex items-center justify-center text-green-400 text-xs font-medium">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 {{ Auth::user()->name }}
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L1 3h10L6 8z"/></svg>
             </button>
-            {{-- Dropdown --}}
-            <div class="absolute right-0 top-10 w-44 bg-gray-900 border border-white/10 rounded-xl py-1 hidden group-hover:block z-50">
+            <div id="dropdown" class="absolute right-0 top-10 w-44 bg-gray-900 border border-white/10 rounded-xl py-1 hidden z-50">
                 <a href="/profile" class="block px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5">Profile</a>
                 <div class="border-t border-white/10 my-1"></div>
                 <form method="POST" action="{{ route('logout') }}">
@@ -48,7 +48,7 @@
     </div>
     <div class="bg-white/5 rounded-xl p-4 border border-white/8">
         <p class="text-xs text-white/40 mb-1">Tools disimpan</p>
-        <p class="text-2xl font-medium text-white">0</p>
+        <p class="text-2xl font-medium text-white">{{ Auth::user()->savedTools->count() }}</p>
     </div>
     <div class="bg-white/5 rounded-xl p-4 border border-white/8">
         <p class="text-xs text-white/40 mb-1">Hari berturut-turut</p>
@@ -89,6 +89,33 @@
             </a>
             @endforeach
         </div>
+
+        {{-- Tools Tersimpan --}}
+        @php $saved = Auth::user()->savedTools()->take(4)->get(); @endphp
+        @if($saved->count())
+        <div class="mt-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-medium">Tools Tersimpan</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                @foreach($saved as $tool)
+                <a href="{{ route('tool.detail', $tool->slug) }}"
+                   class="block bg-gray-900 border border-green-400/20 rounded-xl p-4 hover:border-green-400/40 transition-colors">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium text-white mb-3"
+                         style="background: {{ $tool->icon_color ?? '#1a1060' }}">
+                        {{ $tool->icon_text }}
+                    </div>
+                    <h3 class="text-sm font-medium text-white mb-1">{{ $tool->name }}</h3>
+                    <p class="text-xs text-white/40 leading-relaxed line-clamp-2">{{ $tool->description }}</p>
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/8">
+                        <span class="text-xs text-white/30">{{ $tool->language }}</span>
+                        <span class="text-xs text-yellow-400">&#9733; {{ $tool->rating }}</span>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </div>
 
     {{-- Sidebar kanan --}}
@@ -96,7 +123,7 @@
         {{-- Profile card --}}
         <div class="bg-gray-900 border border-white/10 rounded-xl p-5 mb-4">
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-green-400/20 border border-green-400/30 flex items-center justify-content-center items-center justify-center text-green-400 font-medium">
+                <div class="w-10 h-10 rounded-full bg-green-400/20 border border-green-400/30 flex items-center justify-center text-green-400 font-medium">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 <div>
@@ -114,9 +141,12 @@
                 </div>
                 <p class="text-xs text-white/30 mt-2">Pelajari 1 tool untuk naik level</p>
             </div>
+            <a href="/profile" class="block mt-4 text-center text-xs text-green-400 border border-green-400/30 rounded-lg py-2 hover:bg-green-400/10">
+                Edit Profile →
+            </a>
         </div>
 
-        {{-- Quick links --}}
+        {{-- Kategori --}}
         <div class="bg-gray-900 border border-white/10 rounded-xl p-5">
             <h3 class="text-sm font-medium mb-3">Kategori populer</h3>
             <div class="flex flex-col gap-2">
@@ -131,6 +161,19 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleDropdown() {
+    const dd = document.getElementById('dropdown');
+    dd.classList.toggle('hidden');
+}
+document.addEventListener('click', function(e) {
+    const dd = document.getElementById('dropdown');
+    if (!e.target.closest('.relative')) {
+        dd.classList.add('hidden');
+    }
+});
+</script>
 
 </body>
 </html>

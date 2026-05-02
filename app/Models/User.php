@@ -45,4 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function savedTools() {
+    return $this->belongsToMany(Tool::class, 'saved_tools');
+}
 }
