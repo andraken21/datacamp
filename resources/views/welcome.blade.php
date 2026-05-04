@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgentCamp - Pelajari AI Agent</title>
+    <title>DataCamp - Pelajari AI Agent</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #0a0e1a; }
@@ -26,7 +26,7 @@
 
 {{-- NAVBAR --}}
 <nav class="flex items-center justify-between px-6 py-3 border-b border-white/10">
-    <a href="/" class="text-green-400 text-base font-medium">&#9632; agentcamp</a>
+    <a href="/" class="text-green-400 text-base font-medium">&#9632; datacamp</a>
     <div class="flex items-center gap-6 text-sm text-white/60">
         <a href="{{ route('katalog') }}" class="hover:text-white">Katalog</a>
         <a href="#" class="hover:text-white">Resources</a>
@@ -174,8 +174,8 @@
 {{-- FOOTER --}}
 <footer class="border-t border-white/8 px-6 py-6 mt-4">
     <div class="flex items-center justify-between">
-        <p class="text-green-400 font-medium">&#9632; agentcamp</p>
-        <p class="text-xs text-white/30">© 2026 AgentCamp. All rights reserved.</p>
+        <p class="text-green-400 font-medium">&#9632; datacamp</p>
+        <p class="text-xs text-white/30">© 2026 DataCamp. All rights reserved.</p>
         <div class="flex gap-4 text-xs text-white/40">
             <a href="#" class="hover:text-white">Tentang</a>
             <a href="#" class="hover:text-white">Syarat Layanan</a>

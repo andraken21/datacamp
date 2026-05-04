@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $tool->name }} - AgentCamp</title>
+    <title>{{ $tool->name }} - DataCamp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>body { background: #0a0e1a; }</style>
 </head>
@@ -11,8 +11,8 @@
 
 {{-- NAVBAR --}}
 <nav class="flex items-center justify-between px-6 py-3 border-b border-white/10">
-    <a href="/" class="text-green-400 text-base font-medium">&#9632; agentcamp</a>
-    <div class="flex items-center gap-4 text-sm text-white/60">
+    <a href="/" class="text-green-400 text-base font-medium">&#9632; </a>
+    <div class="flex items-center gap-4 text-sm text-white/60">datacamp
         <a href="{{ route('katalog') }}" class="hover:text-white">Katalog</a>
     </div>
     <div class="flex gap-2">

@@ -16,7 +16,7 @@
 
 {{-- NAVBAR --}}
 <nav class="flex items-center justify-between px-6 py-3 border-b border-white/10">
-    <a href="/" class="text-green-400 font-medium text-base">&#9632; agentcamp</a>
+    <a href="/" class="text-green-400 font-medium text-base">&#9632; datacamp</a>
     <div class="flex gap-3">
         <a href="#" class="text-sm border border-white/25 px-3 py-1.5 rounded-md hover:border-white">Masuk</a>
         <a href="#" class="text-sm bg-green-400 text-gray-900 font-medium px-3 py-1.5 rounded-md hover:bg-green-300">Mulai Belajar</a>

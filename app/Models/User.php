@@ -48,4 +48,11 @@ class User extends Authenticatable
     public function savedTools() {
     return $this->belongsToMany(Tool::class, 'saved_tools');
 }
+public function enrollments() {
+    return $this->hasMany(Enrollment::class);
+}
+
+public function lessonProgress() {
+    return $this->hasMany(LessonProgress::class);
+}
 }
