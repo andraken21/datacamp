@@ -240,5 +240,105 @@
     </div>
 </div>
 
+{{-- SECTION KOMENTAR --}}
+<div class="max-w-5xl mx-auto px-6 pb-10">
+    <div class="col-span-2">
+
+        {{-- Notif --}}
+        @if(session('success'))
+        <div class="mb-4 px-4 py-2 bg-green-400/15 border border-green-400/30 text-green-400 text-sm rounded-lg">
+            ✓ {{ session('success') }}
+        </div>
+        @endif
+
+        {{-- Form komentar --}}
+        @auth
+        <div class="bg-gray-900 border border-white/10 rounded-xl p-6 mb-6">
+            <h2 class="text-base font-medium mb-4">Tulis Komentar</h2>
+            <form method="POST" action="{{ route('comment.tool', $tool->slug) }}">
+                @csrf
+                {{-- Rating --}}
+                <div class="mb-3">
+                    <label class="text-xs text-white/40 mb-2 block">Rating (opsional)</label>
+                    <div class="flex gap-2">
+                        @for($i = 1; $i <= 5; $i++)
+                        <label class="cursor-pointer">
+                            <input type="radio" name="rating" value="{{ $i }}" class="hidden peer">
+                            <span class="text-2xl peer-checked:text-yellow-400 text-white/20 hover:text-yellow-300">★</span>
+                        </label>
+                        @endfor
+                    </div>
+                </div>
+                {{-- Komentar --}}
+                <div class="mb-3">
+                    <textarea name="body" rows="3" required
+                        placeholder="Tulis komentar atau review kamu..."
+                        class="w-full bg-white/5 border border-white/10 text-white text-sm px-4 py-2.5 rounded-lg placeholder-white/30 focus:outline-none focus:border-green-400/50 resize-none"></textarea>
+                    @error('body')
+                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit" class="bg-green-400 text-gray-900 font-medium px-4 py-2 rounded-lg text-sm hover:bg-green-300">
+                    Kirim Komentar
+                </button>
+            </form>
+        </div>
+        @else
+        <div class="bg-gray-900 border border-white/10 rounded-xl p-6 mb-6 text-center">
+            <p class="text-sm text-white/50 mb-3">Login untuk menulis komentar</p>
+            <a href="{{ route('login') }}" class="text-sm bg-green-400 text-gray-900 font-medium px-4 py-2 rounded-lg hover:bg-green-300">Masuk</a>
+        </div>
+        @endauth
+
+        {{-- List komentar --}}
+        <div class="bg-gray-900 border border-white/10 rounded-xl p-6">
+            <h2 class="text-base font-medium mb-4">
+                Komentar
+                <span class="text-white/30 text-sm ml-1">({{ $tool->comments->count() }})</span>
+            </h2>
+
+            @if($tool->comments->count())
+            <div class="space-y-4">
+                @foreach($tool->comments as $comment)
+                <div class="flex gap-3 pb-4 border-b border-white/5 last:border-0">
+                    <div class="w-8 h-8 rounded-full bg-green-400/20 flex items-center justify-center text-green-400 text-xs font-medium shrink-0">
+                        {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white">{{ $comment->user->name }}</span>
+                                @if($comment->rating)
+                                <span class="text-xs text-yellow-400">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        {{ $i <= $comment->rating ? '★' : '☆' }}
+                                    @endfor
+                                </span>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-white/30">{{ $comment->created_at->diffForHumans() }}</span>
+                                @auth
+                                @if(Auth::id() == $comment->user_id)
+                                <form method="POST" action="{{ route('comment.destroy', $comment->id) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs text-red-400/60 hover:text-red-400">Hapus</button>
+                                </form>
+                                @endif
+                                @endauth
+                            </div>
+                        </div>
+                        <p class="text-sm text-white/60 leading-relaxed">{{ $comment->body }}</p>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @else
+            <p class="text-sm text-white/30 text-center py-4">Belum ada komentar. Jadilah yang pertama!</p>
+            @endif
+        </div>
+    </div>
+</div>
 </body>
 </html>
