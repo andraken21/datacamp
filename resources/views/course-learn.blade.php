@@ -50,7 +50,7 @@
             @foreach($course->lessons as $index => $lesson)
             @php $isCompleted = $completedLessons->contains($lesson->id); @endphp
             <div class="lesson-item px-4 py-3 cursor-pointer flex items-center gap-3 {{ $firstLesson && $firstLesson->id == $lesson->id ? 'active' : '' }}"
-                 onclick="showLesson({{ $lesson->id }}, '{{ addslashes($lesson->title) }}', `{{ addslashes($lesson->content) }}`, '{{ $lesson->type }}', {{ $lesson->duration_minutes }}, {{ $isCompleted ? 'true' : 'false' }})">
+                 onclick="showLesson({{ $lesson->id }}, '{{ addslashes($lesson->title) }}', `{{ addslashes($lesson->content) }}`, '{{ $lesson->type }}', {{ $lesson->duration_minutes }}, '{{ $lesson->video_url }}', {{ $isCompleted ? 'true' : 'false' }})">
                 <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 {{ $isCompleted ? 'bg-green-400 text-gray-900' : 'bg-white/10 text-white/40' }}">
                     @if($isCompleted) ✓
                     @elseif($lesson->type == 'quiz') Q
@@ -72,16 +72,17 @@
     <main class="flex-1 overflow-y-auto">
         <div class="max-w-3xl mx-auto px-8 py-8">
 
-            {{-- Video placeholder --}}
-            <div id="lesson-video" class="w-full aspect-video rounded-xl flex items-center justify-center mb-6"
-                 style="background: linear-gradient(135deg, {{ $course->thumbnail_color }}, #0a0e1a)">
-                <div class="text-center">
-                    <div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3 cursor-pointer hover:bg-white/20">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                    </div>
-                    <p class="text-white/50 text-sm" id="video-label">Klik untuk mulai</p>
-                </div>
-            </div>
+            {{-- Video Player --}}
+<div class="w-full aspect-video rounded-xl overflow-hidden mb-6 bg-black">
+    <iframe 
+        id="lesson-video"
+        class="w-full h-full"
+        src="{{ $firstLesson && $firstLesson->video_url ? $firstLesson->video_url : '' }}"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+    </iframe>
+</div>
 
             {{-- Info lesson --}}
             <div class="flex items-start justify-between mb-6">
@@ -132,17 +133,25 @@
 </div>
 
 <script>
-// Data semua lessons
 const lessons = @json($course->lessons);
 let currentIndex = 0;
 const completedIds = @json($completedLessons);
 
-function showLesson(id, title, content, type, duration, isCompleted) {
+function showLesson(id, title, content, type, duration, videoUrl, isCompleted) {
     // Update judul dan meta
     document.getElementById('lesson-title').textContent = title;
     document.getElementById('lesson-meta').textContent = duration + ' menit · ' + type;
     document.getElementById('lesson-content').textContent = content;
-    document.getElementById('video-label').textContent = title;
+
+    // Update video
+    const iframe = document.getElementById('lesson-video');
+    if (videoUrl) {
+        iframe.src = videoUrl;
+        iframe.classList.remove('hidden');
+    } else {
+        iframe.src = '';
+        iframe.classList.add('hidden');
+    }
 
     // Update form action
     document.getElementById('complete-form').action = '/lessons/' + id + '/complete';
@@ -174,7 +183,7 @@ function nextLesson() {
     if (currentIndex < lessons.length - 1) {
         currentIndex++;
         const l = lessons[currentIndex];
-        showLesson(l.id, l.title, l.content, l.type, l.duration_minutes, completedIds.includes(l.id));
+        showLesson(l.id, l.title, l.content, l.type, l.duration_minutes, l.video_url, completedIds.includes(l.id));
     }
 }
 
@@ -182,7 +191,7 @@ function prevLesson() {
     if (currentIndex > 0) {
         currentIndex--;
         const l = lessons[currentIndex];
-        showLesson(l.id, l.title, l.content, l.type, l.duration_minutes, completedIds.includes(l.id));
+        showLesson(l.id, l.title, l.content, l.type, l.duration_minutes, l.video_url, completedIds.includes(l.id));
     }
 }
 </script>
