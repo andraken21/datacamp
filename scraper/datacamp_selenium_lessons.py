@@ -1,5 +1,7 @@
 import re
+import argparse
 from selenium import webdriver
+import argparse
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -10,7 +12,7 @@ import time
 from datetime import datetime
 
 # ============================================================
-# KONFIGURASI — UPDATE BAGIAN INI SEBELUM DIJALANKAN
+# KONFIGURASI
 # ============================================================
 
 COOKIES = [
@@ -43,31 +45,11 @@ DB_CONFIG = {
     'charset': 'utf8mb4'
 }
 
-# URL untuk verifikasi login
-VERIFY_URL = 'https://optima.datacamp.com/introduction-to-sql/lessons/meet-databases-sql'
-
 # ============================================================
 
 
 def get_db_connection():
     return pymysql.connect(**DB_CONFIG)
-
-
-def title_to_slug(title):
-    """Konversi judul lesson ke slug URL.
-    Contoh: 'What is A/B testing?' → 'what-is-ab-testing'
-    """
-    slug = title.lower()
-    slug = re.sub(r'[^a-z0-9\s-]', '', slug)  # hapus karakter selain huruf, angka, spasi, dash
-    slug = re.sub(r'\s+', '-', slug.strip())   # spasi → dash
-    slug = re.sub(r'-+', '-', slug)            # double dash → single
-    return slug
-
-
-def build_url(course_slug, lesson_title):
-    """Build URL optima.datacamp.com dari course slug dan lesson title."""
-    lesson_slug = title_to_slug(lesson_title)
-    return f"https://optima.datacamp.com/{course_slug}/lessons/{lesson_slug}"
 
 
 def setup_driver():
@@ -88,61 +70,44 @@ def setup_driver():
 
 
 def inject_cookies(driver):
-    """Inject cookies ke optima.datacamp.com dan verifikasi login."""
-    print("→ Membuka optima.datacamp.com...")
-    driver.get('https://optima.datacamp.com')
+    print("→ Inject cookies...")
+    driver.get('https://campus.datacamp.com')
     time.sleep(3)
-
     driver.delete_all_cookies()
     driver.execute_cdp_cmd('Network.setCookies', {'cookies': COOKIES})
-    print("✓ Cookie diinjeksi")
 
-    print(f"→ Verifikasi login...")
-    driver.get(VERIFY_URL)
-    time.sleep(6)
+    driver.get('https://campus.datacamp.com/courses/introduction-to-sql/relational-databases?ex=1')
+    time.sleep(8)
 
-    current_url = driver.current_url
-    page_size = len(driver.page_source)
-    print(f"  URL     : {current_url}")
-    print(f"  Halaman : {page_size:,} karakter")
-
-    if 'login' in current_url or 'signin' in current_url or 'auth' in current_url:
-        print("\n✗ GAGAL LOGIN — redirect ke halaman auth")
-        print("  → Buka Chrome, login manual ke datacamp.com")
-        print("  → F12 → Application → Cookies → copy _dct & authentication_token terbaru")
+    if 'login' in driver.current_url or 'signin' in driver.current_url:
+        print("✗ GAGAL LOGIN — update cookie dulu")
         driver.quit()
         exit(1)
 
-    if page_size < 5000:
-        print("⚠ Halaman terlalu kecil, cek browser...")
-        input("Tekan ENTER jika sudah benar, Ctrl+C untuk batal: ")
-    else:
-        print("✓ Login berhasil!\n")
-
+    print(f"✓ Login berhasil\n")
     driver.refresh()
     time.sleep(3)
+    return driver
 
 
-def wait_for_content(driver, timeout=15):
-    """Tunggu sampai konten halaman selesai dirender."""
+def wait_for_page(driver, timeout=15):
     try:
         WebDriverWait(driver, timeout).until(
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
-        time.sleep(3)  # buffer tambahan untuk React render
+        time.sleep(4)
     except Exception:
         pass
 
 
 def scrape_lesson(driver, url, ex_type):
-    """Scrape konten satu lesson dari optima.datacamp.com."""
     try:
         driver.get(url)
-        wait_for_content(driver)
+        wait_for_page(driver)
 
         page_size = len(driver.page_source)
         if page_size < 8000:
-            print(f"    ⚠ Halaman terlalu kecil ({page_size} char) — slug mungkin salah")
+            print(f"    ⚠ Halaman blank ({page_size} char)")
             return None
 
         result = {
@@ -152,25 +117,20 @@ def scrape_lesson(driver, url, ex_type):
             'video_url': None,
         }
 
-        # ── INSTRUCTIONS / KONTEN TEKS ──────────────────────────
+        # ── INSTRUCTIONS ─────────────────────────────────────
         try:
-            selectors = [
-                # optima — panel kiri konten lesson
-                '[class*="LessonContent"] p',
-                '[class*="SlideContent"] p',
-                '[class*="lesson-content"] p',
-                '[class*="ExerciseContent"] p',
-                '[class*="AssignmentText"] p',
-                '[class*="ContentPanel"] p',
-                # fallback
+            for sel in [
                 '[data-cy="exercise-assignment-text"]',
                 '[data-testid="assignment-text"]',
-                '.exercise-assignment-description',
+                '[class*="LessonContent"] p',
+                '[class*="SlideContent"] p',
+                '[class*="AssignmentText"] p',
+                '[class*="ExerciseContent"] p',
+                '[class*="ContentPanel"] p',
                 '[class*="Assignment"] p',
                 '[class*="instructions"] p',
                 '.dc-panel__body p',
-            ]
-            for sel in selectors:
+            ]:
                 els = driver.find_elements(By.CSS_SELECTOR, sel)
                 if els:
                     text = '\n'.join([e.text for e in els if e.text.strip()])
@@ -178,18 +138,17 @@ def scrape_lesson(driver, url, ex_type):
                         result['instructions'] = text[:3000]
                         break
         except Exception as e:
-            print(f"    ⚠ Error instructions: {e}")
+            print(f"    ⚠ instructions error: {e}")
 
-        # ── SAMPLE CODE ─────────────────────────────────────────
+        # ── SAMPLE CODE ───────────────────────────────────────
         try:
-            selectors = [
+            for sel in [
                 '.monaco-editor .view-lines',
                 '[data-cy="code-editor"] .view-lines',
                 '[data-testid="code-editor"] .view-lines',
                 '[class*="CodeEditor"] .view-lines',
                 '.CodeMirror-code',
-            ]
-            for sel in selectors:
+            ]:
                 els = driver.find_elements(By.CSS_SELECTOR, sel)
                 if els:
                     text = '\n'.join([e.text for e in els if e.text.strip()])
@@ -197,16 +156,42 @@ def scrape_lesson(driver, url, ex_type):
                         result['sample_code'] = text[:3000]
                         break
         except Exception as e:
-            print(f"    ⚠ Error sample_code: {e}")
+            print(f"    ⚠ sample_code error: {e}")
 
-        # ── VIDEO & TRANSCRIPT ───────────────────────────────────
+        # ── VIDEO & TRANSCRIPT ────────────────────────────────
         if ex_type == 'video':
             try:
-                for sel in ['iframe[src*="projector.datacamp.com"]', 'iframe[src*="vimeo"]', 'iframe[src*="youtube"]', 'video[src]']:
+                # Selector video — DataCamp pakai projector.datacamp.com
+                for sel in [
+                    'iframe[src*="projector.datacamp.com"]',
+                    'iframe[src*="vimeo"]',
+                    'iframe[src*="youtube"]',
+                    'video[src]',
+                ]:
                     els = driver.find_elements(By.CSS_SELECTOR, sel)
                     if els:
                         result['video_url'] = els[0].get_attribute('src')
                         break
+
+                # Kalau iframe tidak punya src langsung, coba data-src atau cari dari page source
+                if not result['video_url']:
+                    match = re.search(
+                        r'(https://projector\.datacamp\.com[^\s"\']+)',
+                        driver.page_source
+                    )
+                    if match:
+                        result['video_url'] = match.group(1)
+
+                # Transcript — cari tombol Transkripsi lalu klik
+                try:
+                    transcript_btn = driver.find_elements(By.XPATH,
+                        "//*[contains(text(), 'Transkripsi') or contains(text(), 'Transcript')]"
+                    )
+                    if transcript_btn:
+                        transcript_btn[0].click()
+                        time.sleep(2)
+                except Exception:
+                    pass
 
                 for sel in [
                     '[data-cy="transcript"]',
@@ -222,18 +207,32 @@ def scrape_lesson(driver, url, ex_type):
                         if text.strip():
                             result['transcript'] = text[:3000]
                             break
+
+                # Fallback transcript — ambil teks panel kiri (AI Coach area)
+                if not result['transcript']:
+                    for sel in [
+                        '[class*="LessonContent"]',
+                        '[class*="SlideContent"]',
+                        '[class*="ContentPanel"]',
+                    ]:
+                        els = driver.find_elements(By.CSS_SELECTOR, sel)
+                        if els:
+                            text = '\n'.join([e.text for e in els if e.text.strip()])
+                            if text.strip():
+                                result['transcript'] = text[:3000]
+                                break
+
             except Exception as e:
-                print(f"    ⚠ Error video/transcript: {e}")
+                print(f"    ⚠ video error: {e}")
 
         return result
 
     except Exception as e:
-        print(f"    ✗ Error scrape: {e}")
+        print(f"    ✗ Scrape error: {e}")
         return None
 
 
 def update_lesson(cursor, conn, lesson_id, data):
-    """Simpan hasil scrape ke database."""
     try:
         cursor.execute("""
             UPDATE lessons SET
@@ -258,57 +257,88 @@ def update_lesson(cursor, conn, lesson_id, data):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--offset', type=int, default=0,   help='Mulai dari lesson ke-N')
+    parser.add_argument('--limit',  type=int, default=100, help='Jumlah lesson per batch (default: 100)')
+    args = parser.parse_args()
+
     print("=" * 55)
-    print("  DataCamp Scraper — optima.datacamp.com")
+    print(f"  DataCamp Scraper — offset={args.offset} limit={args.limit}")
     print("=" * 55)
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Ambil lessons yang belum ada instruksi
+    # Anti-redundan: WHERE instructions IS NULL memastikan tidak overwrite data yang sudah ada
     cursor.execute("""
-        SELECT l.id, l.title, l.`order`, l.type, c.slug
+        SELECT l.id, l.title, l.`order`, l.type, c.slug, ch.slug as chapter_slug
         FROM lessons l
         JOIN courses c ON l.course_id = c.id
+        LEFT JOIN chapters ch ON l.chapter_id = ch.id
         WHERE l.instructions IS NULL
         ORDER BY c.id, l.`order`
-        LIMIT 200
-    """)
+        LIMIT %s OFFSET %s
+    """, (args.limit, args.offset))
     lessons = cursor.fetchall()
-    print(f"Total lessons belum ada konten: {len(lessons)}\n")
 
+    print(f"Lessons di batch ini: {len(lessons)}")
     if not lessons:
-        print("Tidak ada lesson yang perlu di-scrape.")
+        print("Tidak ada lesson yang perlu di-scrape di range ini.")
         cursor.close()
         conn.close()
         return
 
     driver = setup_driver()
+    inject_cookies(driver)
+
     success = 0
-    slug_miss = 0
     fail = 0
 
     try:
-        inject_cookies(driver)
-        print(f"Mulai scraping {len(lessons)} lessons...\n")
+        print(f"Mulai scraping...\n")
+        for i, (lesson_id, title, order, ex_type, course_slug, chapter_slug) in enumerate(lessons):
 
-        for i, (lesson_id, title, order, ex_type, course_slug) in enumerate(lessons):
-            url = build_url(course_slug, title)
-            lesson_slug = title_to_slug(title)
-            print(f"[{i+1}/{len(lessons)}] {course_slug} / {lesson_slug} ({ex_type})")
+            # Restart driver setiap 50 lesson biar tidak crash
+            if i > 0 and i % 50 == 0:
+                print("\n→ Restart driver...\n")
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+                driver = setup_driver()
+                inject_cookies(driver)
 
-            data = scrape_lesson(driver, url, ex_type)
+            # Build URL pakai chapter slug kalau ada
+            if chapter_slug:
+                url = f"https://campus.datacamp.com/courses/{course_slug}/{chapter_slug}?ex={order}"
+            else:
+                url = f"https://campus.datacamp.com/courses/{course_slug}?ex={order}"
+
+            print(f"[{i+1}/{len(lessons)}] {course_slug} ex={order} ({ex_type})")
+
+            try:
+                data = scrape_lesson(driver, url, ex_type)
+            except Exception as e:
+                print(f"    ✗ Driver error: {e} — restart")
+                try:
+                    driver.quit()
+                except Exception:
+                    pass
+                driver = setup_driver()
+                inject_cookies(driver)
+                data = None
 
             if data:
                 filled = sum(1 for v in data.values() if v)
+                update_lesson(cursor, conn, lesson_id, data)
+                print(f"    ✓ {filled}/4 field terisi {list(k for k,v in data.items() if v)}")
                 if filled > 0:
-                    update_lesson(cursor, conn, lesson_id, data)
-                    print(f"    ✓ {filled}/4 field terisi")
                     success += 1
                 else:
-                    # Halaman load tapi tidak ada konten — slug kemungkinan salah
-                    print(f"    ⚠ 0 field — cek manual: {url}")
-                    slug_miss += 1
+                    fail += 1
             else:
+                print(f"    ✗ Gagal")
                 fail += 1
 
             time.sleep(2)
@@ -316,14 +346,20 @@ def main():
     except KeyboardInterrupt:
         print("\n⚠ Dihentikan oleh user")
     finally:
-        driver.quit()
+        try:
+            driver.quit()
+        except Exception:
+            pass
         cursor.close()
         conn.close()
         print(f"\n{'=' * 55}")
-        print(f"  Berhasil  : {success}")
-        print(f"  Slug miss : {slug_miss}  ← buka URL di browser & cek format slug")
-        print(f"  Error     : {fail}")
+        print(f"  Berhasil : {success}")
+        print(f"  Gagal    : {fail}")
         print(f"{'=' * 55}")
+        if args.offset + args.limit < args.offset + len(lessons) + fail:
+            next_offset = args.offset + args.limit
+            print(f"\n  Lanjut batch berikutnya:")
+            print(f"  python scraper/datacamp_selenium_lessons.py --offset {next_offset} --limit {args.limit}")
 
 
 if __name__ == '__main__':
