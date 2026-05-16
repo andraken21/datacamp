@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog AI Agent</title>
+    <title>Katalog DataCamp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #0a0e1a; }
@@ -25,8 +25,8 @@
 
 {{-- HEADER --}}
 <div class="px-6 pt-8 pb-4">
-    <h1 class="text-2xl font-medium mb-1">Katalog AI Agent</h1>
-    <p class="text-sm text-white/50">Temukan tools, framework, dan library untuk membangun AI agent</p>
+    <h1 class="text-2xl font-medium mb-1">Katalog DataCamp</h1>
+    <p class="text-sm text-white/50">Temukan tools, framework, dan library untuk membangun DataCamp</p>
 </div>
 
 {{-- SEARCH & SORT --}}

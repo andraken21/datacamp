@@ -139,7 +139,7 @@
                 </div>
                 <div>
                     <p class="text-sm text-white/80">{{ $course->instructor }}</p>
-                    <p class="text-xs text-white/40">AI Agent Expert</p>
+                    <p class="text-xs text-white/40">DataCamp Expert</p>
                 </div>
             </div>
         </div>

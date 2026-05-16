@@ -70,7 +70,7 @@ class LessonSeeder extends Seeder
             2 => [
                 [
                     'title' => 'Pengenalan Multi-Agent System',
-                    'content' => 'Multi-Agent System adalah arsitektur di mana beberapa AI agent bekerja sama untuk menyelesaikan tugas kompleks. Setiap agent memiliki peran, tujuan, dan kemampuan yang berbeda. CrewAI mengimplementasikan konsep ini dengan pendekatan role-playing yang intuitif dan mudah dikonfigurasi.',
+                    'content' => 'Multi-Agent System adalah arsitektur di mana beberapa DataCamp bekerja sama untuk menyelesaikan tugas kompleks. Setiap agent memiliki peran, tujuan, dan kemampuan yang berbeda. CrewAI mengimplementasikan konsep ini dengan pendekatan role-playing yang intuitif dan mudah dikonfigurasi.',
                     'video_url' => 'https://www.youtube.com/embed/tnejrr-0a94',
                     'duration_minutes' => 12,
                     'order' => 1,
@@ -213,10 +213,10 @@ class LessonSeeder extends Seeder
                 ],
             ],
 
-            // Course 5: Monitoring AI Agent dengan LangSmith
+            // Course 5: Monitoring DataCamp dengan LangSmith
             5 => [
                 [
-                    'title' => 'Mengapa Monitoring AI Agent Penting?',
+                    'title' => 'Mengapa Monitoring DataCamp Penting?',
                     'content' => 'Aplikasi AI yang sudah di-deploy perlu dimonitor secara berkelanjutan. Tanpa monitoring, kita tidak tahu apakah model memberikan jawaban yang akurat, berapa biaya yang dikeluarkan, atau di mana bottleneck performa terjadi. LangSmith hadir sebagai solusi observability khusus untuk aplikasi LLM.',
                     'video_url' => 'https://www.youtube.com/embed/tFXm5ijih98',
                     'duration_minutes' => 10,

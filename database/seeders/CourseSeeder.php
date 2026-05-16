@@ -49,7 +49,7 @@ class CourseSeeder extends Seeder {
                     ['title' => 'Setup CrewAI', 'duration_minutes' => 20, 'type' => 'video'],
                     ['title' => 'Membuat Agent dan Role', 'duration_minutes' => 30, 'type' => 'video'],
                     ['title' => 'Workflow Automation', 'duration_minutes' => 35, 'type' => 'video'],
-                    ['title' => 'Proyek: Tim AI Agent', 'duration_minutes' => 60, 'type' => 'video'],
+                    ['title' => 'Proyek: Tim DataCamp', 'duration_minutes' => 60, 'type' => 'video'],
                 ]
             ],
             [
@@ -95,7 +95,7 @@ class CourseSeeder extends Seeder {
                 ]
             ],
             [
-                'title' => 'Monitoring AI Agent dengan LangSmith',
+                'title' => 'Monitoring DataCamp dengan LangSmith',
                 'category' => 'Monitoring',
                 'difficulty' => 'Pemula',
                 'duration_hours' => 3,

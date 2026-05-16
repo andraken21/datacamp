@@ -17,7 +17,7 @@
 
 <div class="px-6 pt-8 pb-4">
     <h1 class="text-2xl font-medium mb-1">Resources</h1>
-    <p class="text-sm text-white/50">Artikel, tutorial, dan panduan untuk belajar AI agent</p>
+    <p class="text-sm text-white/50">Artikel, tutorial, dan panduan untuk belajar DataCamp</p>
 </div>
 
 {{-- SEARCH & FILTER --}}
@@ -43,14 +43,14 @@
         @php
         $resources = [
             ['title'=>'Panduan Lengkap LangChain 2025','category'=>'Tutorial','time'=>'15 menit baca','color'=>'#1a1060','icon'=>'LC','desc'=>'Pelajari cara membangun aplikasi AI dengan LangChain dari dasar hingga mahir.'],
-            ['title'=>'Apa itu AI Agent? Penjelasan Lengkap','category'=>'Artikel','time'=>'8 menit baca','color'=>'#0d2b20','icon'=>'AI','desc'=>'Memahami konsep AI agent, cara kerja, dan penerapannya di dunia nyata.'],
+            ['title'=>'Apa itu DataCamp? Penjelasan Lengkap','category'=>'Artikel','time'=>'8 menit baca','color'=>'#0d2b20','icon'=>'AI','desc'=>'Memahami konsep DataCamp, cara kerja, dan penerapannya di dunia nyata.'],
             ['title'=>'CrewAI vs AutoGen: Mana yang Lebih Baik?','category'=>'Perbandingan','time'=>'12 menit baca','color'=>'#1a1a40','icon'=>'VS','desc'=>'Perbandingan mendalam antara CrewAI dan AutoGen untuk multi-agent systems.'],
             ['title'=>'Membangun RAG Pipeline dengan LlamaIndex','category'=>'Tutorial','time'=>'20 menit baca','color'=>'#2a1a00','icon'=>'LI','desc'=>'Step-by-step membangun RAG pipeline yang production-ready.'],
-            ['title'=>'Top 10 AI Agent Tools 2025','category'=>'List','time'=>'10 menit baca','color'=>'#0a2020','icon'=>'T10','desc'=>'Daftar tools AI agent terbaik yang wajib dikuasai di tahun 2025.'],
+            ['title'=>'Top 10 DataCamp Tools 2025','category'=>'List','time'=>'10 menit baca','color'=>'#0a2020','icon'=>'T10','desc'=>'Daftar tools DataCamp terbaik yang wajib dikuasai di tahun 2025.'],
             ['title'=>'Monitoring LLM Apps dengan LangSmith','category'=>'Tutorial','time'=>'18 menit baca','color'=>'#2a1010','icon'=>'LS','desc'=>'Cara setup monitoring, tracing, dan evaluasi untuk aplikasi LLM kamu.'],
             ['title'=>'Pengantar AutoGen untuk Pemula','category'=>'Tutorial','time'=>'14 menit baca','color'=>'#1a1a40','icon'=>'AG','desc'=>'Mulai belajar AutoGen dari nol dengan panduan step-by-step ini.'],
-            ['title'=>'LangGraph: Stateful AI Agent','category'=>'Artikel','time'=>'11 menit baca','color'=>'#1a1060','icon'=>'LG','desc'=>'Memahami LangGraph dan cara membuat agent dengan state management.'],
-            ['title'=>'5 Framework AI Agent Terbaik 2025','category'=>'List','time'=>'9 menit baca','color'=>'#0d2b20','icon'=>'F5','desc'=>'Rangkuman framework AI agent terpopuler beserta kelebihan dan kekurangannya.'],
+            ['title'=>'LangGraph: Stateful DataCamp','category'=>'Artikel','time'=>'11 menit baca','color'=>'#1a1060','icon'=>'LG','desc'=>'Memahami LangGraph dan cara membuat agent dengan state management.'],
+            ['title'=>'5 Framework DataCamp Terbaik 2025','category'=>'List','time'=>'9 menit baca','color'=>'#0d2b20','icon'=>'F5','desc'=>'Rangkuman framework DataCamp terpopuler beserta kelebihan dan kekurangannya.'],
         ];
         @endphp
 

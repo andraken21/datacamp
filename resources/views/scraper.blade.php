@@ -12,7 +12,7 @@
 
 <div class="max-w-2xl mx-auto px-6 py-12">
     <h1 class="text-2xl font-medium mb-2">Data Scraper</h1>
-    <p class="text-sm text-white/50 mb-8">Ambil data AI agent tools dari GitHub dan Hugging Face</p>
+    <p class="text-sm text-white/50 mb-8">Ambil data DataCamp tools dari GitHub dan Hugging Face</p>
 
     @if(session('success'))
     <div class="mb-4 px-4 py-3 bg-green-400/15 border border-green-400/30 text-green-400 text-sm rounded-lg">
@@ -34,7 +34,7 @@
                 <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-lg">⚡</div>
                 <div>
                     <h3 class="text-sm font-medium">GitHub Scraper</h3>
-                    <p class="text-xs text-white/40">Scraping repo AI agent dari GitHub API</p>
+                    <p class="text-xs text-white/40">Scraping repo DataCamp dari GitHub API</p>
                 </div>
             </div>
             <form method="POST" action="{{ route('scraper.run') }}">
