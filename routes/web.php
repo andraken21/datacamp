@@ -10,6 +10,9 @@ use App\Http\Controllers\TutorialController;
 
 // Homepage
 Route::get('/', function () {
+    if (Auth::check()) {
+        return view('home-logged');
+    }
     return view('welcome');
 });
 
@@ -20,6 +23,13 @@ Route::get('/katalog/{slug}', [ToolController::class, 'show'])->name('tool.detai
 // Kursus
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('course.detail');
+
+Route::get('/learn', function () {
+    if (Auth::check()) {
+        return view('dashboard');
+    }
+    return redirect()->route('courses');
+})->middleware('auth')->name('learn');
 
 // Halaman statis
 Route::get('/harga', function() { return view('harga'); })->name('harga');
@@ -38,6 +48,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/leaderboard', function () {
+    return view('leaderboard');
+})->name('leaderboard');
+
+Route::get('/practice', function () {
+    return view('practice');
+})->name('practice');
+
+Route::get('/tracks', function () {
+    return view('tracks');
+})->name('tracks');
+
+Route::get('/tracks/career', function () {
+    return view('tracks-career');
+})->name('tracks.career');
+
+Route::get('/tracks/skill', function () {
+    return view('tracks-skill');
+})->name('tracks.skill');
+
+    Route::get('/my-activity', function () {
+    return view('my-activity');
+})->name('my-activity');
+
+Route::get('/assessments', function () {
+    return view('assessments');
+})->name('assessments');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

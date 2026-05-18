@@ -1,216 +1,127 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kursus - DataCamp</title>
+    <title>Courses - DataCamp</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: #1a1a2e; }
-        /* DataCamp dark navy background */
-        body { background-color: #0d0d1a; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-        /* Card hover */
-        .course-card:hover { border-color: rgba(3, 239, 98, 0.35) !important; transform: translateY(-1px); }
-        .course-card { transition: all 0.15s ease; }
-
-        /* Sidebar active */
-        .sidebar-active { background: rgba(3, 239, 98, 0.12); color: #03ef62 !important; border-radius: 6px; }
-        .sidebar-link:hover { background: rgba(255,255,255,0.06); border-radius: 6px; }
-
-        /* Search focus */
-        .search-input:focus { border-color: rgba(3, 239, 98, 0.5); box-shadow: 0 0 0 3px rgba(3, 239, 98, 0.08); }
-
-        /* Badge pill */
-        .badge-beginner  { background: rgba(3,239,98,0.12);  color: #03ef62;  }
-        .badge-mid       { background: rgba(250,189,0,0.12); color: #fabd00; }
-        .badge-expert    { background: rgba(239,68,68,0.12); color: #f87171; }
-        .badge-pro       { background: rgba(250,189,0,0.12); color: #fabd00; border: 1px solid rgba(250,189,0,0.25); }
-        .badge-free      { background: rgba(3,239,98,0.12);  color: #03ef62;  border: 1px solid rgba(3,239,98,0.25); }
-
-        /* Pagination */
-        .page-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); padding: 6px 12px; border-radius: 6px; font-size: 13px; }
-        .page-btn:hover, .page-btn.active { background: rgba(3,239,98,0.15); border-color: rgba(3,239,98,0.4); color: #03ef62; }
+        body { background: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .sidebar-link { display:flex; align-items:center; gap:10px; padding:8px 16px; border-radius:8px; font-size:14px; color:#444; cursor:pointer; text-decoration:none; }
+        .sidebar-link:hover { background:#f0f0f0; }
+        .sidebar-link.active { background:#e8f5e9; color:#1a7a3a; font-weight:500; }
+        .sidebar-link svg { width:18px; height:18px; opacity:0.6; }
+        .card { background:white; border:1px solid #e8e8e8; border-radius:12px; }
+        .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+        .filter-btn { padding:6px 14px; border-radius:999px; font-size:13px; border:1px solid #e0e0e0; background:white; cursor:pointer; color:#444; text-decoration:none; display:inline-block; }
+        .filter-btn.active { background:#05192D; color:white; border-color:#05192D; }
+        .filter-btn:hover:not(.active) { background:#f0f0f0; }
     </style>
 </head>
-<body class="text-white min-h-screen" style="background-color:#0d0d1a;">
-
-{{-- ===== NAVBAR ===== --}}
+<body>
 <x-navbar />
 
-{{-- ===== PAGE WRAPPER ===== --}}
-<div class="max-w-[1280px] mx-auto px-6">
+<div class="flex min-h-screen">
 
-    {{-- PAGE HEADER --}}
-    <div class="pt-8 pb-5">
-        <h1 class="text-[22px] font-semibold text-white mb-1">Kursus DataCamp</h1>
-        <p class="text-sm text-white/45">Pelajari DataCamp dari nol hingga mahir dengan instruktur berpengalaman</p>
-    </div>
+    {{-- SIDEBAR --}}
+    <x-sidebar />
 
-    {{-- SEARCH BAR ROW --}}
-    <form method="GET" action="{{ route('courses') }}" class="flex items-center gap-3 mb-6">
-        <div class="relative flex-1">
-            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input type="text" name="search" value="{{ request('search') }}"
-                placeholder="Cari kursus..."
-                class="search-input w-full bg-[#1a1a2e] border border-white/12 text-white text-sm pl-10 pr-4 py-2.5 rounded-lg placeholder-white/30 focus:outline-none transition-all">
-        </div>
+    {{-- MAIN --}}
+    <main class="flex-1">
 
-        {{-- SORT DROPDOWN --}}
-        <div class="relative">
-            <select name="sort" onchange="this.form.submit()"
-                class="appearance-none bg-[#1a1a2e] border border-white/12 text-white text-sm pl-4 pr-9 py-2.5 rounded-lg focus:outline-none cursor-pointer">
-                <option value="popular"  {{ request('sort')=='popular' ?'selected':'' }}>Terpopuler</option>
-                <option value="rating"   {{ request('sort')=='rating'  ?'selected':'' }}>Rating tertinggi</option>
-                <option value="newest"   {{ request('sort')=='newest'  ?'selected':'' }}>Terbaru</option>
-            </select>
-            <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </div>
-
-        <button type="submit"
-            class="bg-[#03ef62] hover:bg-[#00d455] text-gray-900 font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors">
-            Cari
-        </button>
-    </form>
-
-    {{-- MAIN LAYOUT: Sidebar + Grid --}}
-    <div class="flex gap-7 pb-12">
-
-        {{-- ===== SIDEBAR ===== --}}
-        <aside class="w-44 shrink-0 pt-1">
-
-            {{-- KATEGORI --}}
-            <div class="mb-7">
-                <p class="text-[10px] font-semibold text-white/35 uppercase tracking-[0.1em] mb-2.5">Kategori</p>
-
-                <a href="{{ route('courses') }}"
-                   class="sidebar-link block px-2.5 py-1.5 text-sm mb-0.5 {{ !request('category') || request('category')=='all' ? 'sidebar-active font-medium' : 'text-white/60' }}">
-                    Semua
-                </a>
-
-                @foreach($categories as $cat)
-                <a href="{{ route('courses', array_merge(request()->except('category'), ['category'=>$cat])) }}"
-                   class="sidebar-link block px-2.5 py-1.5 text-sm mb-0.5 {{ request('category')==$cat ? 'sidebar-active font-medium' : 'text-white/60' }}">
-                    {{ $cat }}
-                </a>
-                @endforeach
-            </div>
-
-            {{-- TINGKAT --}}
+        {{-- Hero Banner --}}
+        <div class="p-8 flex items-center justify-between" style="background:#05192D">
             <div>
-                <p class="text-[10px] font-semibold text-white/35 uppercase tracking-[0.1em] mb-2.5">Tingkat</p>
-
-                @foreach(['Pemula','Menengah','Expert'] as $diff)
-                <a href="{{ route('courses', array_merge(request()->all(), ['difficulty'=>$diff])) }}"
-                   class="sidebar-link block px-2.5 py-1.5 text-sm mb-0.5 {{ request('difficulty')==$diff ? 'sidebar-active font-medium' : 'text-white/60' }}">
-                    {{ $diff }}
-                </a>
-                @endforeach
-            </div>
-        </aside>
-
-        {{-- ===== COURSE GRID ===== --}}
-        <main class="flex-1 min-w-0">
-
-            {{-- Result count --}}
-            <p class="text-[12px] text-white/40 mb-4">
-                Menampilkan <span class="text-[#03ef62] font-medium">{{ $courses->total() }}</span> kursus
-            </p>
-
-            @if($courses->count())
-
-            {{-- GRID 3 cols --}}
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                @foreach($courses as $course)
-                <a href="{{ route('course.detail', $course->slug) }}"
-                   class="course-card block bg-[#13131f] border border-white/8 rounded-xl overflow-hidden">
-
-                    {{-- Thumbnail --}}
-                    <div class="h-[130px] flex items-center justify-center relative overflow-hidden"
-                         style="background: linear-gradient(135deg, {{ $course->thumbnail_color ?? '#1e3a5f' }}, #0d0d1a 80%);">
-                        <span class="text-5xl font-black text-white/20 select-none">{{ $course->icon_text }}</span>
-
-                        {{-- Badge PRO/GRATIS --}}
-                        @if(!$course->is_free)
-                        <span class="badge-pro absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full">PRO</span>
-                        @else
-                        <span class="badge-free absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full">GRATIS</span>
-                        @endif
-                    </div>
-
-                    {{-- Content --}}
-                    <div class="p-4">
-
-                        {{-- Difficulty + Category --}}
-                        <div class="flex items-center gap-2 mb-2.5">
-                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full
-                                @if($course->difficulty=='Pemula')   badge-beginner
-                                @elseif($course->difficulty=='Menengah') badge-mid
-                                @else badge-expert @endif">
-                                {{ $course->difficulty }}
-                            </span>
-                            <span class="text-[11px] text-white/35">{{ $course->category }}</span>
-                        </div>
-
-                        {{-- Title --}}
-                        <h3 class="text-[13px] font-semibold text-white leading-snug mb-1.5 line-clamp-2">{{ $course->title }}</h3>
-
-                        {{-- Description --}}
-                        <p class="text-[11px] text-white/40 leading-relaxed mb-3.5 line-clamp-2">{{ $course->description }}</p>
-
-                        {{-- Footer --}}
-                        <div class="flex items-center justify-between pt-3 border-t border-white/[0.07]">
-                            <span class="text-[11px] text-white/35">{{ $course->total_lessons }} pelajaran · {{ $course->duration_hours }}j</span>
-                            <span class="text-[11px] text-yellow-400 flex items-center gap-0.5">
-                                <svg class="w-3 h-3 fill-yellow-400" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
-                                {{ $course->rating }}
-                            </span>
-                        </div>
-
-                        {{-- Instructor --}}
-                        <div class="flex items-center gap-2 mt-2.5">
-                            <div class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-medium text-white/60 shrink-0">
-                                {{ strtoupper(substr($course->instructor, 0, 1)) }}
-                            </div>
-                            <span class="text-[11px] text-white/35 truncate">{{ $course->instructor }}</span>
-                        </div>
-                    </div>
-                </a>
-                @endforeach
-            </div>
-
-            {{-- PAGINATION --}}
-            <div class="flex items-center justify-center gap-1.5">
-                {{ $courses->withQueryString()->links() }}
-            </div>
-
-            @else
-            {{-- EMPTY STATE --}}
-            <div class="flex flex-col items-center justify-center py-24 text-center">
-                <div class="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <div class="flex items-center gap-3 mb-3">
+                    <h1 class="text-2xl font-bold text-white">Courses</h1>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1" style="background:#03EF62;color:#05192D">
+                        📍 Hands-on learning
+                    </span>
                 </div>
-                <p class="text-sm text-white/35">Tidak ada kursus yang cocok.</p>
-                <a href="{{ route('courses') }}" class="mt-3 text-xs text-[#03ef62] hover:underline">Reset filter →</a>
+                <p class="text-sm text-gray-300 max-w-lg">It's time to roll up your sleeves—we learn best by doing. All of our courses are interactive, combining short videos with hands-on exercises.</p>
             </div>
-            @endif
+            <div class="hidden lg:block">
+                <svg width="120" height="100" viewBox="0 0 120 100" fill="none">
+                    <circle cx="90" cy="30" r="16" fill="none" stroke="#03EF62" stroke-width="2"/>
+                    <circle cx="60" cy="60" r="10" fill="none" stroke="#03EF62" stroke-width="1.5" opacity="0.5"/>
+                    <circle cx="30" cy="70" r="10" fill="none" stroke="#03EF62" stroke-width="1.5" opacity="0.5"/>
+                    <path d="M30 70 Q45 40 60 60 Q75 80 90 30" stroke="#03EF62" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/>
+                    <circle cx="90" cy="30" r="4" fill="#03EF62"/>
+                    <text x="84" y="34" font-size="8" fill="#03EF62" font-weight="bold">LEARN</text>
+                </svg>
+            </div>
+        </div>
 
-        </main>
+        <div class="p-6">
+            {{-- Filter pills --}}
+            @php $activeFilter = request('topic', 'all'); @endphp
+<div class="flex flex-wrap gap-2 mb-2">
+    <a href="{{ route('courses') }}" class="filter-btn {{ $activeFilter=='all' ? 'active' : '' }}">All</a>
+    @foreach(['Python','SQL','R','Power BI','Tableau','Alteryx','Excel','Google Sheets','ChatGPT','Gemini','PyTorch','OpenAI','AWS','Azure'] as $topic)
+    <a href="{{ route('courses', array_merge(request()->all(), ['topic'=>strtolower($topic)])) }}"
+       class="filter-btn {{ $activeFilter==strtolower($topic) ? 'active' : '' }}">{{ $topic }}</a>
+    @endforeach
+</div>
+<div class="flex flex-wrap gap-2 mb-5">
+    @foreach(['Snowflake','Databricks','Git','Docker','Shell','Kubernetes','Airflow','Spark'] as $topic)
+    <a href="{{ route('courses', array_merge(request()->all(), ['topic'=>strtolower($topic)])) }}"
+       class="filter-btn {{ $activeFilter==strtolower($topic) ? 'active' : '' }}">{{ $topic }}</a>
+    @endforeach
+    <span class="filter-btn">+21</span>
+</div>
+
+{{-- Search + count bar --}}
+<form method="GET" action="{{ route('courses') }}" class="flex items-center gap-3 mb-6">
+    <p class="text-sm text-gray-500 shrink-0"><span class="font-semibold text-gray-900">{{ $courses->total() }}</span> Courses</p>
+    <div class="flex-1"></div>
+    <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search courses..."
+            class="border border-gray-200 bg-white text-sm pl-9 pr-4 py-2 rounded-lg w-48 focus:outline-none focus:border-green-400">
     </div>
+    <select name="sort" onchange="this.form.submit()" class="border border-gray-200 bg-white text-sm px-3 py-2 rounded-lg focus:outline-none">
+        <option value="popular">Topic</option>
+        <option value="rating">Rating</option>
+        <option value="newest">Newest</option>
+    </select>
+    <button type="button" class="flex items-center gap-2 border border-gray-200 bg-white text-sm px-3 py-2 rounded-lg hover:bg-gray-50">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+        More filters
+    </button>
+</form>
+
+{{-- Course Grid --}}
+@if($courses->count())
+<div class="grid grid-cols-3 gap-4 mb-6">
+    @foreach($courses as $course)
+    <a href="{{ route('course.detail', $course->slug) }}" class="card overflow-hidden transition-shadow block hover:shadow-md">
+        <div class="h-1" style="background:{{ $course->thumbnail_color }}"></div>
+        <div class="p-5">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">COURSE</p>
+            <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">{{ $course->title }}</h3>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-3 h-3 rounded-sm" style="background:{{ $course->thumbnail_color }}"></div>
+                <span class="text-sm text-gray-500">{{ $course->difficulty }}</span>
+            </div>
+            <p class="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{{ $course->description }}</p>
+            @if(!$course->is_free)
+            <span class="text-xs bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded font-medium">PRO</span>
+            @endif
+        </div>
+    </a>
+    @endforeach
+</div>
+{{ $courses->withQueryString()->links() }}
+@else
+<div class="text-center py-20">
+    <p class="text-gray-500 text-sm mb-2">Tidak ada kursus yang cocok.</p>
+    <a href="{{ route('courses') }}" class="text-sm text-green-600 hover:text-green-500">Reset filter →</a>
+</div>
+@endif
+        </div>
+    </main>
 </div>
 
 </body>
 </html>
+

@@ -13,7 +13,7 @@
         .btn-green:hover { background: #00d455; }
     </style>
 </head>
-<body class="min-h-screen bg-white relative overflow-hidden flex items-center justify-center">
+<body class="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
 
     {{-- Background shapes seperti DataCamp --}}
     <div class="absolute top-0 left-0 w-64 h-64 rounded-full opacity-80" style="background:#FF6B35; transform: translate(-40%, -40%)"></div>
@@ -28,12 +28,18 @@
 
         {{-- Logo --}}
         <div class="text-center mb-8">
-            <a href="/" class="inline-flex items-center gap-2">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="4" fill="#05192D"/><path d="M8 16L14 10L20 16L14 22L8 16Z" fill="#03EF62"/><path d="M16 16L22 10L28 16L22 22L16 16Z" fill="#03EF62" opacity="0.5"/></svg>
-                <span class="text-xl font-bold text-gray-900">datacamp</span>
-            </a>
+    <a href="/" class="inline-flex items-center gap-2 justify-center">
+        <div class="flex items-center gap-1.5">
+            <div class="w-7 h-7 rounded flex items-center justify-center" style="background:#03EF62">
+                <span class="font-black text-sm" style="font-style:normal;color:#05192D">D</span>
+            </div>
+            <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
+                <path d="M1 1L9 7L1 13" stroke="#03EF62" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="font-bold text-white text-base" style="font-style:italic;letter-spacing:-0.5px">datacamp</span>
         </div>
-
+    </a>
+</div>
         <div class="bg-white rounded-2xl shadow-xl p-8">
             <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Welcome Back!</h1>
 

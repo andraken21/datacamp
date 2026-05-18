@@ -27,15 +27,18 @@
 <nav class="sticky top-0 z-50 border-b border-white/10" style="background:#05192D">
     <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         <div class="flex items-center gap-8">
-            {{-- Logo DataCamp asli --}}
-            <a href="/" class="flex items-center gap-2">
-                <svg width="26" height="22" viewBox="0 0 52 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0H14C22.837 0 30 7.163 30 16C30 24.837 22.837 32 14 32H0V0Z" fill="white"/>
-                <path d="M14 8H6V24H14C18.418 24 22 20.418 22 16C22 11.582 18.418 8 14 8Z" fill="#1b1d2a"/>
-                <path d="M36 0L52 16L36 32V20L44 16L36 12V0Z" fill="white"/>
-            </svg>
-                <span class="text-white font-bold text-lg italic">datacamp</span>
-            </a>
+            {{-- Logo DataCamp --}}
+<a href="/" class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5">
+        <div class="w-7 h-7 rounded flex items-center justify-center" style="background:#03EF62">
+            <span class="font-black text-sm" style="font-style:normal;color:#05192D">D</span>
+        </div>
+        <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
+            <path d="M1 1L9 7L1 13" stroke="#03EF62" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="font-bold text-white text-base" style="font-style:italic;letter-spacing:-0.5px">datacamp</span>
+    </div>
+</a>
             <div class="hidden md:flex items-center gap-5">
                 <a href="{{ route('courses') }}" class="nav-link flex items-center gap-1">Catalog <svg width="10" height="10" viewBox="0 0 10 10" fill="white"><path d="M5 7L0 2h10z"/></svg></a>
                 <a href="#" class="nav-link flex items-center gap-1">AI Upskilling <svg width="10" height="10" viewBox="0 0 10 10" fill="white"><path d="M5 7L0 2h10z"/></svg></a>
