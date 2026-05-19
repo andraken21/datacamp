@@ -13,42 +13,59 @@ class CourseController extends Controller {
     public function index(Request $request) {
         $query = Course::query();
 
+        // Map nama topik → topik_id
+        $topicMap = [
+            'python' => 33, 'sql' => 35, 'r' => 34, 'power bi' => 31,
+            'tableau' => 41, 'alteryx' => 5, 'excel' => 15,
+            'google sheets' => 21, 'chatgpt' => 9, 'gemini' => 17,
+            'pytorch' => 32, 'openai' => 30, 'aws' => 3, 'azure' => 7,
+            'snowflake' => 38, 'databricks' => 13, 'git' => 18,
+            'docker' => 14, 'shell' => 36, 'kubernetes' => 26,
+            'airflow' => 4, 'spark' => 39, 'dbt' => 43, 'bigquery' => 8,
+            'redshift' => 40, 'scala' => 6, 'julia' => 23, 'mlflow' => 28,
+            'theory' => 42, 'google cloud' => 20, 'claude' => 10,
+            'n8n' => 44, 'sigma' => 37, 'microsoft copilot' => 29,
+            'cursor' => 11, 'github' => 19, 'java' => 22,
+            'fastapi' => 16, 'llama' => 27, 'knime' => 24, 'kafka' => 25,
+            'dvc' => 12, 'ai & llm' => 1, 'ai copilot' => 2,
+        ];
+
+        // Search
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('title', 'like', '%'.$request->search.'%')
-                  ->orWhere('description', 'like', '%'.$request->search.'%');
+                ->orWhere('nama_course', 'like', '%'.$request->search.'%')
+                ->orWhere('description', 'like', '%'.$request->search.'%')
+                ->orWhere('deskripsi', 'like', '%'.$request->search.'%');
             });
         }
 
-        if ($request->category && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
-
+        // Filter by topic → topik_id
         if ($request->topic && $request->topic !== 'all') {
-            $query->where(function($q) use ($request) {
-                $q->where('category', 'like', '%'.$request->topic.'%')
-                  ->orWhere('title', 'like', '%'.$request->topic.'%');
-            });
+            $topicKey = strtolower($request->topic);
+            if (isset($topicMap[$topicKey])) {
+                $query->where('topik_id', $topicMap[$topicKey]);
+            }
         }
 
+        // Filter difficulty
         if ($request->difficulty) {
             $query->where('difficulty', $request->difficulty);
         }
 
+        // Sort
         $sort = $request->sort ?? 'popular';
         if ($sort === 'popular') $query->orderByDesc('students_count');
         elseif ($sort === 'rating') $query->orderByDesc('rating');
         elseif ($sort === 'newest') $query->orderByDesc('created_at');
 
-        $courses = $query->paginate(12);
-        $categories = Course::distinct()->pluck('category');
+        $courses = $query->with('level')->paginate(12);        $categories = Course::distinct()->pluck('category');
 
         return view('courses', compact('courses', 'categories'));
     }
 
     public function show($slug) {
-        $course = Course::with('lessons')->where('slug', $slug)->firstOrFail();
-
+        $course = Course::with(['lessons', 'instruktur', 'level'])->where('slug', $slug)->firstOrFail();
         $enrollment = null;
         $completedLessons = collect();
         $isEnrolled = false;

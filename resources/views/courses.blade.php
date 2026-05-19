@@ -124,7 +124,7 @@
         <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">{{ $course->title }}</h3>
         <div class="flex items-center gap-2 mb-3">
             <div class="w-3 h-3 rounded-sm" style="background:{{ $course->thumbnail_color }}"></div>
-            <span class="text-sm text-gray-500">{{ $course->difficulty }}</span>
+            <span class="text-sm text-gray-500">{{ $course->level->nama_level ?? '-' }}</span>        
         </div>
         <p class="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{{ $course->description }}</p>
         <div class="flex items-center justify-between">

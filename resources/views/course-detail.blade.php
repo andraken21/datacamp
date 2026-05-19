@@ -16,32 +16,45 @@
     <div class="max-w-5xl mx-auto px-6 py-10 grid grid-cols-3 gap-8">
         <div class="col-span-2">
             <div class="flex items-center gap-2 mb-3">
-                <span class="text-xs px-2 py-0.5 rounded bg-white/10 text-white/60">{{ $course->category }}</span>
-                <span class="text-xs px-2 py-0.5 rounded
-                    @if($course->difficulty=='Pemula') bg-green-900/50 text-green-300
-                    @elseif($course->difficulty=='Menengah') bg-yellow-900/50 text-yellow-300
-                    @else bg-red-900/50 text-red-300 @endif">
-                    {{ $course->difficulty }}
+                {{-- Badge Topik --}}
+                <span class="text-xs px-2 py-0.5 rounded bg-white/10 text-white/60">
+                    {{ $course->category }}
                 </span>
+
+                {{-- Badge Level -- diperbaiki dari difficulty string ke level relasi --}}
+                @php $namaLevel = $course->level->nama_level ?? '-'; @endphp
+                <span class="text-xs px-2 py-0.5 rounded
+                    @if($namaLevel == 'Basic') bg-green-900/50 text-green-300
+                    @elseif($namaLevel == 'Intermediate') bg-yellow-900/50 text-yellow-300
+                    @elseif($namaLevel == 'Advanced') bg-red-900/50 text-red-300
+                    @else bg-white/10 text-white/50
+                    @endif">
+                    {{ $namaLevel }}
+                </span>
+
+                {{-- Badge Free/Pro --}}
                 @if($course->is_free)
                 <span class="text-xs px-2 py-0.5 rounded bg-green-400/20 text-green-400">GRATIS</span>
                 @else
                 <span class="text-xs px-2 py-0.5 rounded bg-yellow-400/20 text-yellow-400">PRO</span>
                 @endif
             </div>
+
             <h1 class="text-3xl font-medium mb-3">{{ $course->title }}</h1>
             <p class="text-white/60 text-sm leading-relaxed mb-5">{{ $course->description }}</p>
+
             <div class="flex items-center gap-5 text-sm text-white/50 mb-6">
                 <span class="text-yellow-400 font-medium">&#9733; {{ $course->rating }}</span>
                 <span>{{ number_format($course->students_count) }} siswa</span>
                 <span>{{ $course->total_lessons }} pelajaran</span>
                 <span>{{ $course->duration_hours }} jam</span>
             </div>
+
             <div class="flex items-center gap-2 text-sm text-white/50">
                 <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs">
-                    {{ substr($course->instructor, 0, 1) }}
+                    {{ substr($course->instructor ?? 'D', 0, 1) }}
                 </div>
-                Instruktur: <span class="text-white/80">{{ $course->instructor }}</span>
+                Instruktur: <span class="text-white/80">{{ $course->instructor ?? 'DataCamp' }}</span>
             </div>
         </div>
 
@@ -51,6 +64,7 @@
                  style="background: {{ $course->thumbnail_color }}">
                 {{ $course->icon_text }}
             </div>
+
             @if($isEnrolled)
             <div class="mb-3 text-center">
                 <div class="text-xs text-white/40 mb-1">Progress kamu</div>
@@ -64,14 +78,15 @@
                 {{ $enrollment->progress > 0 ? 'Lanjutkan Belajar' : 'Mulai Belajar' }}
             </a>
             @else
-                <form method="POST" action="{{ route('course.enroll', $course->course_id) }}">
-            @csrf
+            <form method="POST" action="{{ route('course.enroll', $course->course_id) }}">
+                @csrf
                 <button type="submit"
                     class="w-full bg-green-400 text-gray-900 font-medium py-2.5 rounded-lg text-sm hover:bg-green-300 mb-3">
                     {{ $course->is_free ? 'Mulai Gratis' : 'Daftar Kursus' }}
                 </button>
             </form>
             @endif
+
             <div class="space-y-2 text-xs text-white/50">
                 <div class="flex justify-between">
                     <span>Total pelajaran</span>
@@ -83,7 +98,8 @@
                 </div>
                 <div class="flex justify-between">
                     <span>Tingkat</span>
-                    <span class="text-white/80">{{ $course->difficulty }}</span>
+                    {{-- Diperbaiki: pakai relasi level --}}
+                    <span class="text-white/80">{{ $course->level->nama_level ?? '-' }}</span>
                 </div>
                 <div class="flex justify-between">
                     <span>Bahasa</span>
@@ -102,7 +118,7 @@
         <div class="bg-gray-900 border border-white/10 rounded-xl p-6 mb-6">
             <h2 class="text-base font-medium mb-4">Silabus Kursus</h2>
             <div class="space-y-2">
-                @foreach($course->lessons as $index => $lesson)
+                @forelse($course->lessons as $index => $lesson)
                 <div class="flex items-center gap-3 py-3 border-b border-white/5 last:border-0">
                     <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0
                         @if($lesson->type=='quiz') bg-purple-900/50 text-purple-300
@@ -118,7 +134,9 @@
                     <span class="text-xs text-green-400 border border-green-400/30 px-2 py-0.5 rounded">Preview</span>
                     @endif
                 </div>
-                @endforeach
+                @empty
+                <p class="text-sm text-white/30 text-center py-4">Belum ada silabus tersedia.</p>
+                @endforelse
             </div>
         </div>
 
@@ -131,36 +149,53 @@
 
     {{-- SIDEBAR --}}
     <div class="space-y-4">
-        {{-- Instruktur --}}
-<div class="bg-gray-900 border border-white/10 rounded-xl p-5">
-    <h3 class="text-sm font-medium mb-3">Instruktur</h3>
-    @if($course->instruktur)
-    <div class="flex items-center gap-3">
-        <img src="{{ $course->instruktur->url_foto }}" class="w-10 h-10 rounded-full object-cover">
-        <div>
-            <p class="text-sm text-white/80">{{ $course->instruktur->nama_instruktur }}</p>
-            <p class="text-xs text-white/40">{{ $course->instruktur->jabatan }}</p>
-        </div>
-    </div>
-    @else
-    <p class="text-sm text-white/40">DataCamp Expert</p>
-    @endif
-</div>
 
+        {{-- Instruktur --}}
+        <div class="bg-gray-900 border border-white/10 rounded-xl p-5">
+            <h3 class="text-sm font-medium mb-3">Instruktur</h3>
+            @if($course->instruktur)
+            <div class="flex items-center gap-3">
+                <img src="{{ $course->instruktur->url_foto }}" class="w-10 h-10 rounded-full object-cover"
+                     onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($course->instruktur->nama_instruktur) }}&background=1a1060&color=fff'">
+                <div>
+                    <p class="text-sm text-white/80">{{ $course->instruktur->nama_instruktur }}</p>
+                    <p class="text-xs text-white/40">{{ $course->instruktur->jabatan }}</p>
+                </div>
+            </div>
+            @else
+            <p class="text-sm text-white/40">DataCamp Expert</p>
+            @endif
+        </div>
+
+        {{-- Kursus Serupa -- diperbaiki: filter by topik_id bukan category --}}
         <div class="bg-gray-900 border border-white/10 rounded-xl p-5">
             <h3 class="text-sm font-medium mb-3">Kursus serupa</h3>
-            @php $similar = \App\Models\Course::where('category', $course->category)->where('course_id','!=',$course->course_id)->take(3)->get(); @endphp
-            @foreach($similar as $s)
-            <a href="{{ route('course.detail', $s->slug) }}" class="flex gap-3 py-2.5 border-b border-white/5 last:border-0 hover:text-green-400 group">
+            @php
+                $similar = \App\Models\Course::with('level')
+                    ->where('topik_id', $course->topik_id)
+                    ->where('course_id', '!=', $course->course_id)
+                    ->take(3)
+                    ->get();
+            @endphp
+            @forelse($similar as $s)
+            <a href="{{ route('course.detail', $s->slug) }}"
+               class="flex gap-3 py-2.5 border-b border-white/5 last:border-0 hover:text-green-400 group">
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium text-white shrink-0"
                      style="background:{{ $s->thumbnail_color }}">{{ $s->icon_text }}</div>
                 <div>
                     <p class="text-xs text-white/70 group-hover:text-green-400 line-clamp-2">{{ $s->title }}</p>
-                    <p class="text-xs text-white/30 mt-0.5">&#9733; {{ $s->rating }}</p>
+                    <p class="text-xs text-white/30 mt-0.5">
+                        &#9733; {{ $s->rating }}
+                        &nbsp;·&nbsp;
+                        {{ $s->level->nama_level ?? '-' }}
+                    </p>
                 </div>
             </a>
-            @endforeach
+            @empty
+            <p class="text-xs text-white/30">Tidak ada kursus serupa.</p>
+            @endforelse
         </div>
+
     </div>
 </div>
 

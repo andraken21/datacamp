@@ -20,6 +20,10 @@ class Course extends Model {
         return $this->attributes['title'] ?? $this->attributes['nama_course'] ?? '';
     }
 
+    public function level() {
+    return $this->belongsTo(\App\Models\Level::class, 'level_id', 'level_id');
+    }
+
     public function instruktur() {
     return $this->belongsTo(\App\Models\Instruktur::class, 'instruktur_id', 'instruktur_id');
     }
