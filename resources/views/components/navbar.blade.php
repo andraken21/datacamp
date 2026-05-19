@@ -19,23 +19,13 @@
 
     <a href="{{ route('learn') }}" class="px-3 py-1.5 text-sm rounded-full font-semibold transition-colors {{ request()->routeIs('learn') || request()->routeIs('dashboard') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' }}">Learn</a>
 
-    <a href="#" class="px-3 py-1.5 text-sm text-purple-600 hover:text-purple-700 rounded-full hover:bg-purple-50 flex items-center gap-1">
-        <span>✦</span> AI Native
+    <a href="{{ route('ai-native') }}" class="px-3 py-1.5 text-sm text-purple-600 hover:text-purple-700 rounded-full hover:bg-purple-50 flex items-center gap-1 {{ request()->routeIs('ai-native') ? 'bg-purple-100' : '' }}">
+    <span>✦</span> AI Native
     </a>
 
-    <a href="#" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100">Certification</a>
-
+    <a href="{{ route('certification') }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 {{ request()->routeIs('certification') ? 'bg-gray-900 text-white font-semibold' : '' }}">Certification</a>
     <a href="#" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100">Sandbox</a>
-
-    <a href="#" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 flex items-center gap-1">
-        For Business
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L1 3h10z"/></svg>
-    </a>
-
-    <a href="#" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 flex items-center gap-1">
-        DataLab
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8L8 2M5 2h3v3"/></svg>
-    </a>
+    
 </div>
 
         {{-- Right side --}}

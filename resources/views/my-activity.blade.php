@@ -33,7 +33,7 @@
         {{-- Stats --}}
         @php
             $enrollments = Auth::user()->enrollments()->with('course')->get();
-            $completed = $enrollments->where('completed', true)->count();
+            $completed = $enrollments->where('progress', 100)->count();
         @endphp
         <div class="grid grid-cols-4 gap-0 card mb-8 divide-x divide-gray-100">
             <div class="p-5 text-center">
@@ -58,7 +58,7 @@
         @php $tab = request('tab', 'inprogress'); @endphp
         <div class="flex items-center gap-6 border-b border-gray-200 mb-6">
             <a href="?tab=inprogress" class="pb-3 text-sm px-1 {{ $tab=='inprogress' ? 'tab-active' : 'tab-inactive' }}">
-                In Progress <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">{{ $enrollments->where('completed', false)->count() }}</span>
+                In Progress <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">{{ $enrollments->where('progress', '<', 100)->count() }}</span>
             </a>
             <a href="?tab=completed" class="pb-3 text-sm px-1 {{ $tab=='completed' ? 'tab-active' : 'tab-inactive' }}">
                 Completed <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">{{ $completed }}</span>
@@ -71,14 +71,15 @@
         {{-- Course List --}}
         @php
             $filtered = $tab == 'completed'
-                ? $enrollments->where('completed', true)
-                : $enrollments->where('completed', false);
+                ? $enrollments->where('progress', 100)
+                : $enrollments->where('progress', '<', 100);
         @endphp
 
         <p class="text-sm text-gray-500 mb-4">{{ $filtered->count() }} results</p>
 
         <div class="space-y-3">
             @forelse($filtered as $enrollment)
+            @if($enrollment->course)
             <div class="card p-5 flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
                      style="background:{{ $enrollment->course->thumbnail_color ?? '#374151' }}">
@@ -90,7 +91,7 @@
                         <span class="ml-1 text-xs bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded font-medium">✦ AI NATIVE</span>
                         @endif
                     </p>
-                    <p class="text-sm font-semibold text-gray-900">{{ $enrollment->course->title }}</p>
+                    <p class="text-sm font-semibold text-gray-900">{{ $enrollment->course->title ?? 'Course' }}</p>
                     <div class="flex items-center gap-2 mt-1.5">
                         <div class="flex-1 bg-gray-200 rounded-full h-1 max-w-xs">
                             <div class="bg-green-500 h-1 rounded-full" style="width:{{ $enrollment->progress ?? 0 }}%"></div>
@@ -98,12 +99,13 @@
                         <span class="text-xs text-gray-400">{{ $enrollment->progress ?? 0 }}%</span>
                     </div>
                 </div>
-                <a href="{{ route('course.learn', $enrollment->course->slug) }}"
+                <a href="{{ route('course.learn', $enrollment->course->slug ?? '#') }}"
                    class="px-4 py-2 rounded-lg text-sm font-semibold shrink-0"
                    style="background:#03EF62;color:#05192D">
                     Continue
                 </a>
             </div>
+            @endif
             @empty
             <div class="card p-10 text-center">
                 <p class="text-gray-400 text-sm">No courses here yet.</p>
@@ -117,4 +119,3 @@
 
 </body>
 </html>
-

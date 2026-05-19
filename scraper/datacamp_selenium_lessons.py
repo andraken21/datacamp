@@ -272,14 +272,14 @@ def main():
     # Ambil lessons yang belum ada instruksi
     # Anti-redundan: WHERE instructions IS NULL memastikan tidak overwrite data yang sudah ada
     cursor.execute("""
-        SELECT l.id, l.title, l.`order`, l.type, c.slug, ch.slug as chapter_slug
-        FROM lessons l
-        JOIN courses c ON l.course_id = c.id
-        LEFT JOIN chapters ch ON l.chapter_id = ch.id
-        WHERE l.instructions IS NULL
-        ORDER BY c.id, l.`order`
-        LIMIT %s OFFSET %s
-    """, (args.limit, args.offset))
+    SELECT l.id, l.title, l.`order`, l.type, c.slug, lc.title as chapter_title
+    FROM lessons l
+    JOIN courses c ON l.course_id = c.course_id
+    LEFT JOIN lesson_chapters lc ON l.chapter_id = lc.id
+    WHERE l.instructions IS NULL
+    ORDER BY c.course_id, l.`order`
+    LIMIT %s OFFSET %s
+""", (args.limit, args.offset))
     lessons = cursor.fetchall()
 
     print(f"Lessons di batch ini: {len(lessons)}")
@@ -297,7 +297,7 @@ def main():
 
     try:
         print(f"Mulai scraping...\n")
-        for i, (lesson_id, title, order, ex_type, course_slug, chapter_slug) in enumerate(lessons):
+        for i, (lesson_id, title, order, ex_type, course_slug, chapter_title) in enumerate(lessons):
 
             # Restart driver setiap 50 lesson biar tidak crash
             if i > 0 and i % 50 == 0:
@@ -310,11 +310,7 @@ def main():
                 inject_cookies(driver)
 
             # Build URL pakai chapter slug kalau ada
-            if chapter_slug:
-                url = f"https://campus.datacamp.com/courses/{course_slug}/{chapter_slug}?ex={order}"
-            else:
-                url = f"https://campus.datacamp.com/courses/{course_slug}?ex={order}"
-
+            url = f"https://campus.datacamp.com/courses/{course_slug}?ex={order}"
             print(f"[{i+1}/{len(lessons)}] {course_slug} ex={order} ({ex_type})")
 
             try:

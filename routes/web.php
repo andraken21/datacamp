@@ -1,28 +1,46 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ToolController;
-use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseController; 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScraperController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TutorialController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\HomeController;
 
 // Homepage
 Route::get('/', function () {
     if (Auth::check()) {
-        return view('home-logged');
+        return app(HomeController::class)->index();
     }
     return view('welcome');
 });
+
+Route::get('/ai-native', function () {
+    return view('ai-native');
+})->name('ai-native');
 
 // Katalog tools
 Route::get('/katalog', [ToolController::class, 'index'])->name('katalog');
 Route::get('/katalog/{slug}', [ToolController::class, 'show'])->name('tool.detail');
 
-// Kursus
+// Kursus (public)
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('course.detail');
+Route::get('/courses/{slug}/learn', [CourseController::class, 'learn'])->middleware('auth')->name('course.learn');
+
+// Tracks (public)
+Route::get('/tracks/career', [TrackController::class, 'career'])->name('tracks.career');
+Route::get('/tracks/skill', [TrackController::class, 'skill'])->name('tracks.skill');
+Route::get('/tracks/{slug}', [TrackController::class, 'show'])->name('tracks.show');
+
+// Halaman statis
+Route::get('/harga', function() { return view('harga'); })->name('harga');
+Route::get('/certification', function () { return view('certification'); })->name('certification');
+Route::get('/resources', function() { return view('resources'); })->name('resources');
 
 Route::get('/learn', function () {
     if (Auth::check()) {
@@ -31,11 +49,7 @@ Route::get('/learn', function () {
     return redirect()->route('courses');
 })->middleware('auth')->name('learn');
 
-// Halaman statis
-Route::get('/harga', function() { return view('harga'); })->name('harga');
-Route::get('/resources', function() { return view('resources'); })->name('resources');
-
-// Tutorial routes (punya kawanmu)
+// Tutorial routes
 Route::prefix('tutorials')->name('tutorials.')->group(function () {
     Route::get('/', [TutorialController::class, 'index'])->name('index');
     Route::get('/status', [TutorialController::class, 'status'])->name('status');
@@ -43,39 +57,16 @@ Route::prefix('tutorials')->name('tutorials.')->group(function () {
     Route::get('/{slug}', [TutorialController::class, 'show'])->name('show');
 });
 
-// Auth routes
+// Auth routes (requires login)
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
-    Route::get('/leaderboard', function () {
-    return view('leaderboard');
-})->name('leaderboard');
-
-Route::get('/practice', function () {
-    return view('practice');
-})->name('practice');
-
-Route::get('/tracks', function () {
-    return view('tracks');
-})->name('tracks');
-
-Route::get('/tracks/career', function () {
-    return view('tracks-career');
-})->name('tracks.career');
-
-Route::get('/tracks/skill', function () {
-    return view('tracks-skill');
-})->name('tracks.skill');
-
-    Route::get('/my-activity', function () {
-    return view('my-activity');
-})->name('my-activity');
-
-Route::get('/assessments', function () {
-    return view('assessments');
-})->name('assessments');
+    Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
+    Route::get('/leaderboard', function () { return view('leaderboard'); })->name('leaderboard');
+    Route::get('/practice', function () { return view('practice'); })->name('practice');
+    Route::get('/tracks', function () { return view('tracks'); })->name('tracks');
+    Route::get('/my-activity', function () { return view('my-activity'); })->name('my-activity');
+    Route::get('/assessments', function () { return view('assessments'); })->name('assessments');
+    Route::get('/real-world-projects', function () { return view('real-world-projects'); })->name('real-world-projects');
+    Route::get('/code-alongs', function () { return view('code-alongs'); })->name('code-alongs');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -84,7 +75,6 @@ Route::get('/assessments', function () {
     Route::post('/katalog/{id}/save', [ToolController::class, 'save'])->name('tool.save');
 
     Route::post('/courses/{id}/enroll', [CourseController::class, 'enroll'])->name('course.enroll');
-    Route::get('/courses/{slug}/learn', [CourseController::class, 'learn'])->name('course.learn');
     Route::post('/lessons/{id}/complete', [CourseController::class, 'completeLesson'])->name('lesson.complete');
 
     Route::get('/scraper', [ScraperController::class, 'index'])->name('scraper');
@@ -96,3 +86,4 @@ Route::get('/assessments', function () {
 });
 
 require __DIR__.'/auth.php';
+

@@ -191,25 +191,19 @@
         <div class="grid grid-cols-3 gap-4">
             @php $courses = \App\Models\Course::take(6)->get(); @endphp
             @foreach($courses as $course)
-            <a href="{{ route('course.detail', $course->slug) }}"
-               class="card-hover bg-white border border-gray-100 rounded-xl p-5 cursor-pointer block">
-                <div class="flex items-center gap-2 mb-3">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="#05192D"><rect width="16" height="16" rx="2"/><path d="M4 8l3 3 5-5" stroke="white" stroke-width="1.5" fill="none"/></svg>
-                    <span class="text-xs text-gray-500 font-medium uppercase">{{ $course->difficulty }}</span>
-                    <span class="text-gray-300 text-xs">·</span>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#999" stroke-width="1.5"><circle cx="6" cy="6" r="5"/><path d="M6 3v3l2 2"/></svg>
-                    <span class="text-xs text-gray-500">{{ $course->duration_hours }} hr</span>
-                </div>
-                <h3 class="text-base font-semibold text-gray-900 mb-2">{{ $course->title }}</h3>
-                <p class="text-sm text-gray-500 line-clamp-2 mb-4">{{ $course->description }}</p>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-green-600 font-medium flex items-center gap-1">See Details →</span>
-                    @if($course->category == 'AI' || $course->category == 'Multi-Agent')
-                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-medium">✦ AI NATIVE</span>
-                    @endif
-                </div>
-            </a>
-            @endforeach
+<a href="{{ route('course.detail', $course->course_id) }}"
+   class="card-hover bg-white border border-gray-100 rounded-xl p-5 cursor-pointer block">
+    <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs text-gray-500 font-medium uppercase">{{ $course->level_id }}</span>
+        <span class="text-xs text-gray-500">{{ $course->durasi }}</span>
+    </div>
+    <h3 class="text-base font-semibold text-gray-900 mb-2">{{ $course->nama_course }}</h3>
+    <p class="text-sm text-gray-500 line-clamp-2 mb-4">{{ $course->deskripsi }}</p>
+    <div class="flex items-center justify-between">
+        <span class="text-sm text-green-600 font-medium">See Details →</span>
+    </div>
+</a>
+@endforeach
         </div>
     </div>
 </div>

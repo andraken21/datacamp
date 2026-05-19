@@ -60,28 +60,30 @@
         @php $enrollments = Auth::user()->enrollments()->with('course')->latest()->take(1)->get(); @endphp
         @if($enrollments->count())
         @foreach($enrollments as $enrollment)
+        @if($enrollment->course)
         <div class="card mb-4 p-5 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold"
-                     style="background:{{ $enrollment->course->thumbnail_color }}">
-                    {{ $enrollment->course->icon_text }}
+                     style="background:{{ $enrollment->course->thumbnail_color ?? '#1a1060' }}">
+                    {{ $enrollment->course->icon_text ?? '?' }}
                 </div>
                 <div>
                     <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-0.5">LEARN</p>
-                    <a href="{{ route('course.learn', $enrollment->course->slug) }}" class="text-base font-semibold text-gray-900 hover:text-green-600 flex items-center gap-1">
-                        {{ $enrollment->course->title }} →
+                    <a href="{{ route('course.learn', $enrollment->course->slug ?? '#') }}" class="text-base font-semibold text-gray-900 hover:text-green-600 flex items-center gap-1">
+                        {{ $enrollment->course->title ?? 'Course' }} →
                     </a>
                     <div class="flex items-center gap-1 text-xs text-gray-500 mt-1">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        {{ $enrollment->course->duration_hours }} hr to go
+                        {{ $enrollment->course->duration_hours ?? 0 }} hr to go
                     </div>
                 </div>
             </div>
-            <a href="{{ route('course.learn', $enrollment->course->slug) }}"
+            <a href="{{ route('course.learn', $enrollment->course->slug ?? '#') }}"
                class="px-5 py-2.5 rounded-lg text-sm font-semibold" style="background:#03EF62;color:#05192D">
                 Let's Do This
             </a>
         </div>
+        @endif
         @endforeach
         @endif
 
@@ -147,14 +149,14 @@
                     <a href="{{ route('courses') }}" class="text-xs text-green-600 hover:text-green-500">View all →</a>
                 </div>
                 <div class="space-y-3">
-                    @php $featured = \App\Models\Course::where('is_featured',true)->take(3)->get(); @endphp
+                    @php $featured = \App\Models\Course::where('is_featured', true)->take(3)->get(); @endphp
                     @foreach($featured as $course)
                     <a href="{{ route('course.detail', $course->slug) }}" class="card p-4 flex items-center gap-4 hover:shadow-md transition-shadow block">
                         <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
-                             style="background:{{ $course->thumbnail_color }}">{{ $course->icon_text }}</div>
+                             style="background:{{ $course->thumbnail_color ?? '#1a1060' }}">{{ $course->icon_text ?? '?' }}</div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 line-clamp-1">{{ $course->title }}</p>
-                            <p class="text-xs text-gray-500">{{ $course->difficulty }} · {{ $course->duration_hours }}h · ★ {{ $course->rating }}</p>
+                            <p class="text-sm font-medium text-gray-900 line-clamp-1">{{ $course->title ?? '' }}</p>
+                            <p class="text-xs text-gray-500">{{ $course->difficulty ?? '' }} · {{ $course->duration_hours ?? 0 }}h · ★ {{ $course->rating ?? 0 }}</p>
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
@@ -167,4 +169,3 @@
 
 </body>
 </html>
-

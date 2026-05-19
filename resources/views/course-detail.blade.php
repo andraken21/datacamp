@@ -64,8 +64,8 @@
                 {{ $enrollment->progress > 0 ? 'Lanjutkan Belajar' : 'Mulai Belajar' }}
             </a>
             @else
-            <form method="POST" action="{{ route('course.enroll', $course->id) }}">
-                @csrf
+                <form method="POST" action="{{ route('course.enroll', $course->course_id) }}">
+            @csrf
                 <button type="submit"
                     class="w-full bg-green-400 text-gray-900 font-medium py-2.5 rounded-lg text-sm hover:bg-green-300 mb-3">
                     {{ $course->is_free ? 'Mulai Gratis' : 'Daftar Kursus' }}
@@ -131,22 +131,25 @@
 
     {{-- SIDEBAR --}}
     <div class="space-y-4">
-        <div class="bg-gray-900 border border-white/10 rounded-xl p-5">
-            <h3 class="text-sm font-medium mb-3">Instruktur</h3>
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-green-400/20 flex items-center justify-center text-green-400 font-medium">
-                    {{ substr($course->instructor, 0, 1) }}
-                </div>
-                <div>
-                    <p class="text-sm text-white/80">{{ $course->instructor }}</p>
-                    <p class="text-xs text-white/40">DataCamp Expert</p>
-                </div>
-            </div>
+        {{-- Instruktur --}}
+<div class="bg-gray-900 border border-white/10 rounded-xl p-5">
+    <h3 class="text-sm font-medium mb-3">Instruktur</h3>
+    @if($course->instruktur)
+    <div class="flex items-center gap-3">
+        <img src="{{ $course->instruktur->url_foto }}" class="w-10 h-10 rounded-full object-cover">
+        <div>
+            <p class="text-sm text-white/80">{{ $course->instruktur->nama_instruktur }}</p>
+            <p class="text-xs text-white/40">{{ $course->instruktur->jabatan }}</p>
         </div>
+    </div>
+    @else
+    <p class="text-sm text-white/40">DataCamp Expert</p>
+    @endif
+</div>
 
         <div class="bg-gray-900 border border-white/10 rounded-xl p-5">
             <h3 class="text-sm font-medium mb-3">Kursus serupa</h3>
-            @php $similar = \App\Models\Course::where('category', $course->category)->where('id','!=',$course->id)->take(3)->get(); @endphp
+            @php $similar = \App\Models\Course::where('category', $course->category)->where('course_id','!=',$course->course_id)->take(3)->get(); @endphp
             @foreach($similar as $s)
             <a href="{{ route('course.detail', $s->slug) }}" class="flex gap-3 py-2.5 border-b border-white/5 last:border-0 hover:text-green-400 group">
                 <div class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium text-white shrink-0"
