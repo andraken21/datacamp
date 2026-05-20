@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use App\Models\Tool;
 
 class HomeController extends Controller
 {
@@ -22,17 +23,24 @@ class HomeController extends Controller
             ?->course
             ?->track ?? null;
 
-        // Leaderboard top 5
-        $topUsers = User::orderByDesc('xp')->take(5)->get();
+        // ✅ Pakai Stored Procedure: GetLeaderboard(5)
+        $topUsers = DB::select('CALL GetLeaderboard(5)');
 
-        // XP progress ke 250
-        $xpPercent = min(100, round(($user->xp ?? 0) / 250 * 100));
+        // ✅ Pakai Stored Procedure: GetUserXPSummary(user_id)
+        $xpSummary = DB::select('CALL GetUserXPSummary(?)', [$user->id]);
+        $xpSummary = $xpSummary[0] ?? null;
+
+        $xpPercent = $xpSummary?->xp_percent ?? 0;
+
+        // Sandbox tools
+        $sandboxTools = Tool::orderBy('nama_sandbox')->take(6)->get();
 
         return view('home-logged', compact(
             'enrollment',
-            'enrolledTrack', 
+            'enrolledTrack',
             'topUsers',
-            'xpPercent'
+            'xpPercent',
+            'sandboxTools',
         ));
     }
 }

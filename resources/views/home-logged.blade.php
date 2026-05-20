@@ -118,9 +118,9 @@
                         <h3 class="text-gray-900 font-semibold mb-1">Meet DataLab</h3>
                         <p class="text-sm text-gray-500 max-w-lg">An AI-powered cloud notebook for Python, R, and SQL. Analyze data, visualize results, and share reports — all from your browser.</p>
                     </div>
-                    <button class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0 ml-4">
+                    <a href="{{ route('practice') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0 ml-4">
                         Create Workbook
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -147,9 +147,12 @@
                         <p class="text-gray-900 font-semibold mb-1">You have 1000 unused tokens to practice your skills!</p>
                         <p class="text-sm text-gray-500 mb-3">Step into Sandbox that provides a simple, low-risk environment for practicing BI, Cloud, Data Warehouse, Business Intelligence, and AI tools.</p>
                         <div class="flex gap-2 flex-wrap">
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">📊 Power BI</span>
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">✨ OpenAI with Python</span>
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">☁️ AWS</span>
+                            @foreach($sandboxTools as $tool)
+                            <a href="{{ $tool->url ?? route('katalog') }}" target="_blank"
+                                class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-gray-50">
+                                {{ $tool->nama_sandbox }}
+                            </a>
+                            @endforeach
                             <a href="{{ route('katalog') }}" class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">View All →</a>
                         </div>
                     </div>

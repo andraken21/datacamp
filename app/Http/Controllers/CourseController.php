@@ -7,10 +7,12 @@ use App\Models\Enrollment;
 use App\Models\LessonProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class CourseController extends Controller {
-
-    public function index(Request $request) {
+class CourseController extends Controller
+{
+    public function index(Request $request)
+    {
         $query = Course::query();
 
         // Map nama topik → topik_id
@@ -64,14 +66,20 @@ class CourseController extends Controller {
         return view('courses', compact('courses', 'categories'));
     }
 
+<<<<<<< HEAD
     public function show($slug) {
         $course = Course::with(['lessons', 'instruktur', 'level'])->where('slug', $slug)->firstOrFail();
+=======
+    public function show($slug)
+    {
+        $course = Course::with('lessons')->where('slug', $slug)->firstOrFail();
+
+>>>>>>> d0d01e7 (Update lagi lagi)
         $enrollment = null;
         $completedLessons = collect();
         $isEnrolled = false;
 
         if (Auth::check()) {
-            // FIX: pakai $course->id konsisten (jangan campuran course_id dan id)
             $enrollment = Enrollment::where('user_id', Auth::id())
                          ->where('course_id', $course->id)
                          ->first();
@@ -89,41 +97,37 @@ class CourseController extends Controller {
         return view('course-detail', compact('course', 'enrollment', 'completedLessons', 'isEnrolled'));
     }
 
-    public function enroll($id) {
-    if (!Auth::check()) {
-        return redirect()->route('login');
-    }
-
-    $course = Course::findOrFail($id);
-    
-    if (!$course) {
-        return back()->with('error', 'Kursus tidak ditemukan.');
-    }
-
-    $existing = Enrollment::where('user_id', Auth::id())
-                ->where('course_id', $course->id)->first();
-
-    if (!$existing) {
-        Enrollment::create([
-            'user_id'   => Auth::id(),
-            'course_id' => $course->id,
-            'progress'  => 0,
-        ]);
-        $course->increment('students_count');
-    }
-
-    return redirect()->route('course.learn', $course->slug);
-}
-
-    public function learn($slug) {
+    public function enroll($id)
+    {
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        // FIX: hapus duplikat query course, gabungkan dengan instruktur sekaligus
+        $course = Course::findOrFail($id);
+
+        $existing = Enrollment::where('user_id', Auth::id())
+                    ->where('course_id', $course->id)->first();
+
+        if (!$existing) {
+            Enrollment::create([
+                'user_id'   => Auth::id(),
+                'course_id' => $course->id,
+                'progress'  => 0,
+            ]);
+            $course->increment('students_count');
+        }
+
+        return redirect()->route('course.learn', $course->slug);
+    }
+
+    public function learn($slug)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         $course = Course::with(['lessons', 'instruktur'])->where('slug', $slug)->firstOrFail();
 
-        // FIX: pakai $course->id konsisten
         $enrollment = Enrollment::where('user_id', Auth::id())
                      ->where('course_id', $course->id)
                      ->firstOrFail();
@@ -138,53 +142,49 @@ class CourseController extends Controller {
         return view('course-learn', compact('course', 'enrollment', 'completedLessons', 'firstLesson'));
     }
 
-    public function completeLesson(Request $request, $lessonId) {
+    // ✅ Satu completeLesson — XP & streak dihandle TRIGGER MySQL
+    public function completeLesson(Request $request, $lessonId)
+    {
+        $user = Auth::user();
+
         $progress = LessonProgress::firstOrCreate(
-            ['user_id' => Auth::id(), 'lesson_id' => $lessonId],
-            ['is_completed' => false]
+            ['user_id' => $user->id, 'lesson_id' => $lessonId],
+            ['is_completed' => 0]
         );
 
-        // Kalau sudah completed, jangan tambah XP lagi
+        // Kalau sudah completed, tidak perlu update lagi
         if ($progress->is_completed) {
             return back()->with('message', 'Pelajaran ini sudah selesai sebelumnya.');
         }
 
-        $progress->update(['is_completed' => true, 'completed_at' => now()]);
+        // ✅ Update is_completed → trigger after_lesson_completed otomatis jalan
+        // Trigger akan: tambah XP +10, update streak & last_activity di tabel users
+        $progress->update([
+            'is_completed' => 1,
+            'completed_at' => now(),
+        ]);
 
+        // Update progress enrollment
         $lesson = \App\Models\Lesson::findOrFail($lessonId);
         $course = $lesson->course;
-        $totalLessons = $course->lessons()->count(); // FIX: hitung langsung dari relasi
+        $totalLessons = $course->lessons()->count();
 
-        $completedCount = LessonProgress::where('user_id', Auth::id())
+        $completedCount = LessonProgress::where('user_id', $user->id)
                          ->whereIn('lesson_id', $course->lessons->pluck('id'))
                          ->where('is_completed', true)
                          ->count();
 
-        $progressPercent = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+        $progressPercent = $totalLessons > 0
+            ? round(($completedCount / $totalLessons) * 100)
+            : 0;
 
-        // FIX: pakai $course->id konsisten
-        Enrollment::where('user_id', Auth::id())
+        Enrollment::where('user_id', $user->id)
                   ->where('course_id', $course->id)
                   ->update(['progress' => $progressPercent]);
 
-        // Tambah XP ke user
-        Auth::user()->increment('xp', 10);
+        // Fresh user untuk ambil XP terbaru hasil trigger
+        $updatedUser = $user->fresh();
 
-        // Update streak
-        $user = Auth::user()->fresh(); // FIX: fresh() supaya data terbaru
-        $today = now()->toDateString();
-
-        if (!$user->last_activity || $user->last_activity->format('Y-m-d') != $today) {
-            $yesterday = now()->subDay()->toDateString();
-            if ($user->last_activity && $user->last_activity->format('Y-m-d') == $yesterday) {
-                $user->increment('streak');
-            } else {
-                $user->streak = 1;
-            }
-            $user->last_activity = now();
-            $user->save();
-        }
-
-        return back()->with('message', 'Pelajaran selesai! +10 XP');
+        return back()->with('message', "Pelajaran selesai! +10 XP · Total: {$updatedUser->xp} XP 🎉");
     }
 }

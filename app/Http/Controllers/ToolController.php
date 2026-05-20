@@ -9,37 +9,26 @@ use Illuminate\Support\Facades\Auth;
 class ToolController extends Controller {
 
     public function index(Request $request) {
-        $query = Tool::query();
+    $query = Tool::query();
 
-        if ($request->search) {
-            $query->where('name', 'like', '%'.$request->search.'%')
-                  ->orWhere('description', 'like', '%'.$request->search.'%');
-        }
-
-        if ($request->category && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
-
-        if ($request->language) {
-            $query->where('language', $request->language);
-        }
-
-        $sort = $request->sort ?? 'rating';
-        if ($sort === 'rating') $query->orderByDesc('rating');
-        elseif ($sort === 'stars') $query->orderByDesc('stars_github');
-        elseif ($sort === 'az') $query->orderBy('name');
-
-        $tools = $query->paginate(12);
-        $categories = Tool::distinct()->pluck('category');
-        $languages = Tool::distinct()->pluck('language');
-
-        return view('katalog', compact('tools', 'categories', 'languages'));
+    if ($request->search) {
+        $query->where('nama_sandbox', 'like', '%'.$request->search.'%')
+              ->orWhere('deskripsi_singkat', 'like', '%'.$request->search.'%');
     }
 
-    public function show($slug) {
-        $tool = Tool::with(['comments.user'])->where('slug', $slug)->firstOrFail();
-        return view('tool-detail', compact('tool'));
-    }
+    $sort = $request->sort ?? 'az';
+    if ($sort === 'token') $query->orderByDesc('token_per_menit');
+    else $query->orderBy('nama_sandbox');
+
+    $tools = $query->paginate(12);
+
+    return view('katalog', compact('tools'));
+}
+
+public function show($id) {
+    $tool = Tool::findOrFail($id);
+    return view('tool-detail', compact('tool'));
+}
 
     public function save(Request $request, $id) {
         $user = Auth::user();
