@@ -23,7 +23,7 @@
     <span>✦</span> AI Native
     </a>
 
-    <a href="{{ route('certification') }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 {{ request()->routeIs('certification') ? 'bg-gray-900 text-white font-semibold' : '' }}">Certification</a>
+    <a href="{{ route('certification.index') }}" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 {{ request()->routeIs('certification*') ? 'bg-gray-900 text-white font-semibold' : '' }}">Certification</a>
     <a href="#" class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100">Sandbox</a>
     
 </div>

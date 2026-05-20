@@ -10,6 +10,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TutorialController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CertificationController;
 
 // Homepage
 Route::get('/', function () {
@@ -39,8 +40,23 @@ Route::get('/tracks/{slug}', [TrackController::class, 'show'])->name('tracks.sho
 
 // Halaman statis
 Route::get('/harga', function() { return view('harga'); })->name('harga');
-Route::get('/certification', function () { return view('certification'); })->name('certification');
 Route::get('/resources', function() { return view('resources'); })->name('resources');
+
+// ============================================
+// Certification Routes
+// ============================================
+Route::prefix('certification')->name('certification.')->group(function () {
+    Route::get('/',                     [CertificationController::class, 'index'])          ->name('index');
+    Route::get('/career/data-analyst',  [CertificationController::class, 'careerAnalyst'])  ->name('career.analyst');
+    Route::get('/career/data-scientist',[CertificationController::class, 'careerScientist'])->name('career.scientist');
+    Route::get('/career/data-engineer', [CertificationController::class, 'careerEngineer'])->name('career.engineer');
+    Route::get('/tech/power-bi',        [CertificationController::class, 'techPowerBI'])    ->name('tech.powerbi');
+    Route::get('/tech/tableau',         [CertificationController::class, 'techTableau'])    ->name('tech.tableau');
+    Route::get('/tech/sql',             [CertificationController::class, 'techSQL'])        ->name('tech.sql');
+    Route::get('/cpe',                  [CertificationController::class, 'cpe'])            ->name('cpe');
+    Route::get('/theory',               [CertificationController::class, 'theory'])         ->name('theory');
+    Route::get('/history',              [CertificationController::class, 'history'])        ->name('history');
+});
 
 Route::get('/learn', function () {
     if (Auth::check()) {
@@ -85,5 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::view('/faq', 'faq')->name('faq');
+Route::view('/feedback', 'feedback')->name('feedback');
 
+require __DIR__.'/auth.php';

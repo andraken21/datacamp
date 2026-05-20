@@ -161,7 +161,7 @@
         {{-- Certification Section --}}
         <div>
             <div class="flex items-center justify-between mb-3">
-                <a href="{{ route('certification') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
+                <a href="{{ route('certification.index') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
                     Certification →
                 </a>
@@ -182,7 +182,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <a href="{{ route('certification') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0">
+                    <a href="{{ route('certification.index') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0">
                         See All
                     </a>
                 </div>
