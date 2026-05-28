@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses - DataCamp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body { background: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .sidebar-link { display:flex; align-items:center; gap:10px; padding:8px 16px; border-radius:8px; font-size:14px; color:#444; cursor:pointer; text-decoration:none; }
@@ -53,21 +54,43 @@
         </div>
 
         <div class="p-6">
-            {{-- Filter pills --}}
-            @php $activeFilter = request('topic', 'all'); @endphp
+            {{-- Filter pills row 1 --}}
+@php
+    $activeFilter = request('topic', 'all');
+    $mainTopics = ['Python','SQL','R','Power BI','Tableau','Alteryx','Excel','Google Sheets','ChatGPT','Gemini','PyTorch','OpenAI','AWS','Azure'];
+    $moreTopics = ['Snowflake','Databricks','Git','Docker','Shell','Kubernetes','Airflow','Spark','dbt','BigQuery','Redshift','Scala','Julia','MLflow','Theory','Google Cloud','Claude','n8n','Sigma','Microsoft Copilot','Cursor','GitHub','Java','DataLab','FastAPI','Llama','KNIME','Kafka','DVC'];
+@endphp
+
 <div class="flex flex-wrap gap-2 mb-2">
     <a href="{{ route('courses') }}" class="filter-btn {{ $activeFilter=='all' ? 'active' : '' }}">All</a>
-    @foreach(['Python','SQL','R','Power BI','Tableau','Alteryx','Excel','Google Sheets','ChatGPT','Gemini','PyTorch','OpenAI','AWS','Azure'] as $topic)
-    <a href="{{ route('courses', array_merge(request()->all(), ['topic'=>strtolower($topic)])) }}"
+    @foreach($mainTopics as $topic)
+    <a href="{{ route('courses', array_merge(request()->except('page'), ['topic'=>strtolower($topic)])) }}"
        class="filter-btn {{ $activeFilter==strtolower($topic) ? 'active' : '' }}">{{ $topic }}</a>
     @endforeach
 </div>
-<div class="flex flex-wrap gap-2 mb-5">
+<div class="flex flex-wrap gap-2 mb-5 items-center">
     @foreach(['Snowflake','Databricks','Git','Docker','Shell','Kubernetes','Airflow','Spark'] as $topic)
-    <a href="{{ route('courses', array_merge(request()->all(), ['topic'=>strtolower($topic)])) }}"
+    <a href="{{ route('courses', array_merge(request()->except('page'), ['topic'=>strtolower($topic)])) }}"
        class="filter-btn {{ $activeFilter==strtolower($topic) ? 'active' : '' }}">{{ $topic }}</a>
     @endforeach
-    <span class="filter-btn">+21</span>
+
+    {{-- Dropdown +21 --}}
+    <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" class="filter-btn flex items-center gap-1">
+            +21
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 7L0 2h10z"/></svg>
+        </button>
+        <div x-show="open" @click.away="open = false"
+             class="absolute top-full left-0 mt-1 z-50 bg-white border border-gray-200 rounded-xl shadow-lg p-3 w-64">
+            <p class="text-xs font-semibold text-gray-400 uppercase mb-2 px-1">TECHNOLOGY</p>
+            <div class="flex flex-wrap gap-1.5">
+                @foreach($moreTopics as $topic)
+                <a href="{{ route('courses', array_merge(request()->except('page'), ['topic'=>strtolower($topic)])) }}"
+                   class="filter-btn text-xs py-1 px-2.5 {{ $activeFilter==strtolower($topic) ? 'active' : '' }}">{{ $topic }}</a>
+                @endforeach
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- Search + count bar --}}
@@ -94,22 +117,26 @@
 @if($courses->count())
 <div class="grid grid-cols-3 gap-4 mb-6">
     @foreach($courses as $course)
-    <a href="{{ route('course.detail', $course->slug) }}" class="card overflow-hidden transition-shadow block hover:shadow-md">
-        <div class="h-1" style="background:{{ $course->thumbnail_color }}"></div>
-        <div class="p-5">
-            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">COURSE</p>
-            <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">{{ $course->title }}</h3>
-            <div class="flex items-center gap-2 mb-3">
-                <div class="w-3 h-3 rounded-sm" style="background:{{ $course->thumbnail_color }}"></div>
-                <span class="text-sm text-gray-500">{{ $course->difficulty }}</span>
-            </div>
-            <p class="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{{ $course->description }}</p>
-            @if(!$course->is_free)
-            <span class="text-xs bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded font-medium">PRO</span>
-            @endif
+<a href="{{ route('course.detail', $course->slug) }}" class="card overflow-hidden transition-shadow block hover:shadow-md">
+    <div class="h-1" style="background:{{ $course->thumbnail_color }}"></div>
+    <div class="p-5">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">COURSE</p>
+        <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">{{ $course->title }}</h3>
+        <div class="flex items-center gap-2 mb-3">
+            <div class="w-3 h-3 rounded-sm" style="background:{{ $course->thumbnail_color }}"></div>
+            <span class="text-sm text-gray-500">{{ $course->level->nama_level ?? '-' }}</span>        
         </div>
-    </a>
-    @endforeach
+        <p class="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{{ $course->description }}</p>
+        <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">{{ $course->instructor ?? 'DataCamp' }}</span>
+            <span class="text-xs text-gray-400">{{ $course->durasi }}</span>
+        </div>
+        @if(!$course->is_free)
+        <span class="text-xs bg-yellow-50 text-yellow-600 border border-yellow-200 px-2 py-0.5 rounded font-medium mt-2 inline-block">PRO</span>
+        @endif
+    </div>
+</a>
+@endforeach
 </div>
 {{ $courses->withQueryString()->links() }}
 @else
@@ -124,4 +151,5 @@
 
 </body>
 </html>
+
 

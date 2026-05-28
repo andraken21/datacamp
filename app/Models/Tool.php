@@ -4,19 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Tool extends Model {
-   public function comments()
-    {
-    return $this->morphMany(Comment::class, 'commentable')->latest();
-    }
-    protected $fillable = [
-        'name', 'slug', 'description', 'category',
-        'language', 'difficulty', 'rating', 'stars_github',
-        'source_url', 'icon_text', 'icon_color', 'tags', 'is_featured'
-    ];
 
-    protected $casts = [
-        'tags' => 'array',
-        'is_featured' => 'boolean',
+class Tool extends Model {
+    protected $table = 'sandbox';
+    protected $primaryKey = 'sandbox_id';
+    public $timestamps = false;
+
+    protected $fillable = [
+        'nama_sandbox',
+        'deskripsi_singkat',
+        'deskripsi_lengkap',
+        'token_per_menit',
+        'akses_perangkat',
+        'url',
     ];
 }

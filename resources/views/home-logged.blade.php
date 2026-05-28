@@ -48,10 +48,9 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                {{-- Current Course --}}
-                @php $enrollment = Auth::user()->enrollments()->with('course')->latest()->first(); @endphp
-                @if($enrollment)
-                <div class="rounded-xl overflow-hidden relative" style="background: linear-gradient(135deg, {{ $enrollment->course->thumbnail_color }}, #05192D); min-height: 140px;">
+                {{-- Current Course (dari $enrollment yang dikirim controller) --}}
+                @if($enrollment && $enrollment->course)
+                <div class="rounded-xl overflow-hidden relative" style="background: linear-gradient(135deg, {{ $enrollment->course->thumbnail_color ?? '#1a1060' }}, #05192D); min-height: 140px;">
                     <div class="p-5 h-full flex flex-col justify-between">
                         <div>
                             <p class="text-white/60 text-xs uppercase tracking-wide font-medium mb-2">COURSE</p>
@@ -78,15 +77,25 @@
                 </div>
                 @endif
 
-                {{-- Enrolled Track --}}
+                {{-- Enrolled Track (dari $enrolledTrack yang dikirim controller) --}}
                 <div class="card p-5 flex flex-col justify-between">
                     <div>
                         <p class="text-xs text-gray-400 uppercase tracking-wide font-medium mb-2">ENROLLED TRACK</p>
-                        <h3 class="text-gray-900 font-semibold text-base leading-tight mb-1">Data Science with Python</h3>
+                        @if($enrolledTrack)
+                            <h3 class="text-gray-900 font-semibold text-base leading-tight mb-1">{{ $enrolledTrack->title }}</h3>
+                        @else
+                            <h3 class="text-gray-900 font-semibold text-base leading-tight mb-1">No track enrolled yet</h3>
+                        @endif
                     </div>
-                    <a href="{{ route('courses') }}" class="text-green-600 text-sm font-medium hover:text-green-500 flex items-center gap-1">
-                        See track →
-                    </a>
+                    @if($enrolledTrack)
+                        <a href="{{ route('tracks.show', $enrolledTrack->slug) }}" class="text-green-600 text-sm font-medium hover:text-green-500 flex items-center gap-1">
+                            See track →
+                        </a>
+                    @else
+                        <a href="{{ route('tracks.career') }}" class="text-green-600 text-sm font-medium hover:text-green-500 flex items-center gap-1">
+                            Browse Tracks →
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -109,9 +118,9 @@
                         <h3 class="text-gray-900 font-semibold mb-1">Meet DataLab</h3>
                         <p class="text-sm text-gray-500 max-w-lg">An AI-powered cloud notebook for Python, R, and SQL. Analyze data, visualize results, and share reports — all from your browser.</p>
                     </div>
-                    <button class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0 ml-4">
+                    <a href="{{ route('practice.index') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0 ml-4">
                         Create Workbook
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -119,13 +128,14 @@
         {{-- Sandbox Section --}}
         <div>
             <div class="flex items-center justify-between mb-3">
-                <a href="#" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
+                <a href="{{ route('practice.index') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     Sandbox →
                 </a>
             </div>
             <div class="card p-5">
                 <div class="flex items-center gap-5">
+                    {{-- Token circle (hardcode 1000 karena fitur sandbox belum ada di DB) --}}
                     <div class="w-16 h-16 relative shrink-0">
                         <svg viewBox="0 0 64 64" width="64" height="64">
                             <circle cx="32" cy="32" r="28" fill="none" stroke="#e5e7eb" stroke-width="6"/>
@@ -137,10 +147,13 @@
                         <p class="text-gray-900 font-semibold mb-1">You have 1000 unused tokens to practice your skills!</p>
                         <p class="text-sm text-gray-500 mb-3">Step into Sandbox that provides a simple, low-risk environment for practicing BI, Cloud, Data Warehouse, Business Intelligence, and AI tools.</p>
                         <div class="flex gap-2 flex-wrap">
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">📊 Power BI</span>
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">✨ OpenAI with Python</span>
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">☁️ AWS</span>
-                            <span class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">View All →</span>
+                            @foreach($sandboxTools as $tool)
+                            <a href="{{ $tool->url ?? route('katalog') }}" target="_blank"
+                                class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-gray-50">
+                                {{ $tool->nama_sandbox }}
+                            </a>
+                            @endforeach
+                            <a href="{{ route('katalog') }}" class="border border-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:bg-gray-50">View All →</a>
                         </div>
                     </div>
                     <p class="text-xs text-gray-400 shrink-0">1 min = 30 tokens</p>
@@ -151,7 +164,7 @@
         {{-- Certification Section --}}
         <div>
             <div class="flex items-center justify-between mb-3">
-                <a href="#" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
+                <a href="{{ route('certification.index') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
                     Certification →
                 </a>
@@ -172,9 +185,9 @@
                             @endforeach
                         </div>
                     </div>
-                    <button class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0">
+                    <a href="{{ route('certification.index') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0">
                         See All
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -202,13 +215,13 @@
 
         {{-- My Activity --}}
         <div>
-            <a href="#" class="flex items-center gap-2 text-gray-900 font-semibold mb-3 hover:text-green-600">
+            <a href="{{ route('my-activity') }}" class="flex items-center gap-2 text-gray-900 font-semibold mb-3 hover:text-green-600">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                 My Activity →
             </a>
             <div class="card p-5">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
+                    <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-lg">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                     <div>
@@ -238,7 +251,7 @@
         {{-- Leaderboard --}}
         <div>
             <div class="flex items-center justify-between mb-3">
-                <a href="#" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
+                <a href="{{ route('leaderboard') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     Leaderboard →
                 </a>
@@ -251,19 +264,24 @@
                     </div>
                     <p class="text-sm text-gray-600 text-center">Gain <span class="font-semibold text-gray-900">250XP</span> to enter this week's Bit League</p>
                 </div>
+
+                {{-- XP Progress Bar (dari $xpPercent yang dikirim controller) --}}
                 <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                    @php $xpPercent = min(100, round((Auth::user()->xp ?? 0) / 250 * 100)); @endphp
                     <div class="bg-green-500 h-2 rounded-full" style="width:{{ $xpPercent }}%"></div>
                 </div>
                 <p class="text-xs text-gray-500 text-center">{{ Auth::user()->xp ?? 0 }} / 250 XP</p>
 
+                {{-- Top Users (dari $topUsers yang dikirim controller) --}}
                 <div class="border-t border-gray-100 mt-4 pt-4 space-y-2">
-                    @php $topUsers = \App\Models\User::orderByDesc('xp')->take(5)->get(); @endphp
                     @foreach($topUsers as $i => $u)
                     <div class="flex items-center gap-3">
                         <span class="text-xs font-bold w-4 text-center {{ $i==0?'text-yellow-500':($i==1?'text-gray-400':($i==2?'text-orange-400':'text-gray-300')) }}">{{ $i+1 }}</span>
-                        <div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">{{ strtoupper(substr($u->name,0,1)) }}</div>
-                        <span class="flex-1 text-xs text-gray-700 {{ Auth::id()==$u->id?'font-semibold':'' }}">{{ $u->name }}</span>
+                        <div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
+                            {{ strtoupper(substr($u->name, 0, 1)) }}
+                        </div>
+                        <span class="flex-1 text-xs text-gray-700 {{Auth::id() == $u->user_id ? 'font-semibold' : '' }}">
+                            {{ $u->name }} {{ Auth::id()==$u->user_id ? '(You)' : '' }}
+                        </span>
                         <span class="text-xs text-gray-500">{{ $u->xp ?? 0 }} XP</span>
                     </div>
                     @endforeach

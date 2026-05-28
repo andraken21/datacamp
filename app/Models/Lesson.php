@@ -14,11 +14,12 @@ class Lesson extends Model {
         'is_free_preview' => 'boolean',
     ];
 
+    // ✅ FIX: explicit foreign key & owner key karena Course pakai course_id bukan id
     public function course() {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Course::class, 'course_id', 'course_id');
     }
 
     public function progress() {
-        return $this->hasMany(LessonProgress::class);
+        return $this->hasMany(LessonProgress::class, 'lesson_id', 'id');
     }
 }

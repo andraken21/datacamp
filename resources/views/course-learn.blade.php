@@ -39,18 +39,12 @@
 
 <div class="flex h-[calc(100vh-52px)]">
 
-    {{-- SIDEBAR KIRI: Daftar Lesson --}}
-    <aside class="w-72 shrink-0 border-r border-white/10 overflow-y-auto">
-        <div class="p-4 border-b border-white/8">
-            <p class="text-xs text-white/40 uppercase tracking-widest mb-1">Silabus</p>
-            <p class="text-sm font-medium">{{ $course->total_lessons }} Pelajaran · {{ $course->duration_hours }} Jam</p>
-        </div>
 
         <div class="py-2">
             @foreach($course->lessons as $index => $lesson)
             @php $isCompleted = $completedLessons->contains($lesson->id); @endphp
             <div class="lesson-item px-4 py-3 cursor-pointer flex items-center gap-3 {{ $firstLesson && $firstLesson->id == $lesson->id ? 'active' : '' }}"
-                 onclick="showLesson({{ $lesson->id }}, '{{ addslashes($lesson->title) }}', `{{ addslashes($lesson->content) }}`, '{{ $lesson->type }}', {{ $lesson->duration_minutes }}, '{{ $lesson->video_url }}', {{ $isCompleted ? 'true' : 'false' }})">
+                 onclick="showLesson({{ $lesson->id }}, '{{ addslashes($lesson->title) }}', '{{ $lesson->type }}', {{ $lesson->duration_minutes }}, '{{ $lesson->video_url }}', {{ $isCompleted ? 'true' : 'false' }})">
                 <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs shrink-0 {{ $isCompleted ? 'bg-green-400 text-gray-900' : 'bg-white/10 text-white/40' }}">
                     @if($isCompleted) ✓
                     @elseif($lesson->type == 'quiz') Q
@@ -70,25 +64,31 @@
 
     {{-- KONTEN UTAMA --}}
     <main class="flex-1 overflow-y-auto">
-        <div class="max-w-3xl mx-auto px-8 py-8">
+        <div class="max-w-4xl mx-auto px-8 py-8">
 
             {{-- Video Player --}}
-<div class="w-full aspect-video rounded-xl overflow-hidden mb-6 bg-black">
-    <iframe 
-        id="lesson-video"
-        class="w-full h-full"
-        src="{{ $firstLesson && $firstLesson->video_url ? $firstLesson->video_url : '' }}"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-    </iframe>
-</div>
+            <div class="w-full aspect-video rounded-xl overflow-hidden mb-5 bg-black">
+                <video id="lesson-video"
+                    class="w-full h-full"
+                    controls
+                    controlslist="nodownload"
+                    style="background:#000;">
+                    <source id="lesson-video-src"
+                        src="{{ $firstLesson && $firstLesson->video_url ? asset($firstLesson->video_url) : '' }}"
+                        type="video/mp4">
+                    Browser kamu tidak mendukung video.
+                </video>
+            </div>
 
-            {{-- Info lesson --}}
+            {{-- Judul & tombol selesai --}}
             <div class="flex items-start justify-between mb-6">
                 <div>
-                    <h1 class="text-xl font-medium mb-1" id="lesson-title">{{ $firstLesson ? $firstLesson->title : 'Pilih pelajaran' }}</h1>
-                    <p class="text-sm text-white/40" id="lesson-meta">{{ $firstLesson ? $firstLesson->duration_minutes.' menit · '.$firstLesson->type : '' }}</p>
+                    <h1 class="text-xl font-medium mb-1" id="lesson-title">
+                        {{ $firstLesson ? $firstLesson->title : 'Pilih pelajaran' }}
+                    </h1>
+                    <p class="text-sm text-white/40" id="lesson-meta">
+                        {{ $firstLesson ? $firstLesson->duration_minutes.' menit · '.$firstLesson->type : '' }}
+                    </p>
                 </div>
                 <form method="POST" action="{{ route('lesson.complete', $firstLesson ? $firstLesson->id : 0) }}" id="complete-form">
                     @csrf
@@ -97,26 +97,6 @@
                         {{ $completedLessons->contains($firstLesson?->id) ? '✓ Selesai' : 'Tandai Selesai' }}
                     </button>
                 </form>
-            </div>
-
-            {{-- Konten --}}
-            <div class="bg-gray-900 border border-white/10 rounded-xl p-6 mb-6">
-                <h2 class="text-sm font-medium text-white/60 mb-4 uppercase tracking-widest">Materi Pelajaran</h2>
-                <div id="lesson-content" class="text-sm text-white/70 leading-relaxed">
-                    {{ $firstLesson ? $firstLesson->content : 'Pilih pelajaran dari sidebar kiri untuk memulai.' }}
-                </div>
-            </div>
-
-            {{-- Quiz placeholder --}}
-            <div id="quiz-section" class="hidden bg-gray-900 border border-white/10 rounded-xl p-6 mb-6">
-                <h2 class="text-sm font-medium mb-4">&#9632; Quiz</h2>
-                <p class="text-sm text-white/60 mb-4">Uji pemahaman kamu dengan pertanyaan berikut:</p>
-                <div class="space-y-3">
-                    <div class="bg-white/5 rounded-lg p-4 cursor-pointer hover:bg-white/10 text-sm">A. Jawaban pertama</div>
-                    <div class="bg-white/5 rounded-lg p-4 cursor-pointer hover:bg-white/10 text-sm">B. Jawaban kedua</div>
-                    <div class="bg-white/5 rounded-lg p-4 cursor-pointer hover:bg-white/10 text-sm">C. Jawaban ketiga</div>
-                    <div class="bg-white/5 rounded-lg p-4 cursor-pointer hover:bg-white/10 text-sm">D. Jawaban keempat</div>
-                </div>
             </div>
 
             {{-- Navigasi prev/next --}}
@@ -128,6 +108,7 @@
                     Selanjutnya →
                 </button>
             </div>
+
         </div>
     </main>
 </div>
@@ -137,20 +118,25 @@ const lessons = @json($course->lessons);
 let currentIndex = 0;
 const completedIds = @json($completedLessons);
 
-function showLesson(id, title, content, type, duration, videoUrl, isCompleted) {
+function showLesson(id, title, type, duration, videoUrl, isCompleted) {
     // Update judul dan meta
     document.getElementById('lesson-title').textContent = title;
     document.getElementById('lesson-meta').textContent = duration + ' menit · ' + type;
-    document.getElementById('lesson-content').textContent = content;
 
-    // Update video
-    const iframe = document.getElementById('lesson-video');
+    // Update video — pakai <video> tag bukan iframe
+    const video = document.getElementById('lesson-video');
+    const src = document.getElementById('lesson-video-src');
     if (videoUrl) {
-        iframe.src = videoUrl;
-        iframe.classList.remove('hidden');
+        src.src = '/storage/' + videoUrl.replace('videos/', '') !== videoUrl
+            ? videoUrl
+            : videoUrl;
+        // Coba asset path langsung
+        src.src = videoUrl.startsWith('http') ? videoUrl : '/' + videoUrl;
+        video.load();
+        video.play().catch(() => {}); // autoplay best-effort
     } else {
-        iframe.src = '';
-        iframe.classList.add('hidden');
+        src.src = '';
+        video.load();
     }
 
     // Update form action
@@ -166,15 +152,13 @@ function showLesson(id, title, content, type, duration, videoUrl, isCompleted) {
         btn.textContent = 'Tandai Selesai';
     }
 
-    // Show/hide quiz
-    document.getElementById('quiz-section').classList.toggle('hidden', type !== 'quiz');
-
     // Update active di sidebar
     document.querySelectorAll('.lesson-item').forEach((el, i) => {
         el.classList.remove('active');
         if (lessons[i] && lessons[i].id === id) {
             el.classList.add('active');
             currentIndex = i;
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     });
 }
@@ -183,7 +167,7 @@ function nextLesson() {
     if (currentIndex < lessons.length - 1) {
         currentIndex++;
         const l = lessons[currentIndex];
-        showLesson(l.id, l.title, l.content, l.type, l.duration_minutes, l.video_url, completedIds.includes(l.id));
+        showLesson(l.id, l.title, l.type, l.duration_minutes, l.video_url, completedIds.includes(l.id));
     }
 }
 
@@ -191,7 +175,7 @@ function prevLesson() {
     if (currentIndex > 0) {
         currentIndex--;
         const l = lessons[currentIndex];
-        showLesson(l.id, l.title, l.content, l.type, l.duration_minutes, l.video_url, completedIds.includes(l.id));
+        showLesson(l.id, l.title, l.type, l.duration_minutes, l.video_url, completedIds.includes(l.id));
     }
 }
 </script>

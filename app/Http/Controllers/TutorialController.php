@@ -3,98 +3,80 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class TutorialController extends Controller
 {
-    // URL FastAPI — sesuaikan kalau beda port/host
-    private string $apiBase = 'http://127.0.0.1:8000';
-
-    // ── Halaman daftar tutorial ──────────────────────────────
     public function index(Request $request)
     {
-        $params = [
-            'page'     => $request->get('page', 1),
-            'per_page' => $request->get('per_page', 20),
-            'search'   => $request->get('search'),
-            'category' => $request->get('category'),
-            'author'   => $request->get('author'),
-        ];
+        $query = DB::table('tutorial as t')
+                   ->leftJoin('tutorial_author as a', 't.author_id', '=', 'a.author_id')
+                   ->leftJoin('topik as tp', 't.topik_id', '=', 'tp.topik_id')
+                   ->select('t.*', 'a.nama_author as author', 'tp.nama_topik as category');
 
-        // hapus param kosong supaya tidak dikirim ke API
-        $params = array_filter($params, fn($v) => $v !== null && $v !== '');
-
-        try {
-            $response = Http::timeout(10)->get("{$this->apiBase}/tutorials", $params);
-            $data     = $response->json();
-        } catch (\Exception $e) {
-            $data = ['total' => 0, 'data' => [], 'total_pages' => 0, 'page' => 1];
+        if ($request->search) {
+            $query->where('t.judul', 'like', '%'.$request->search.'%');
         }
 
-        // ambil kategori untuk dropdown filter
-        try {
-            $categories = Http::timeout(5)->get("{$this->apiBase}/categories")->json()['categories'] ?? [];
-        } catch (\Exception $e) {
-            $categories = [];
+        if ($request->category) {
+            $query->where('tp.nama_topik', $request->category);
         }
+
+        $total = $query->count();
+        $perPage = 20;
+        $currentPage = (int) $request->get('page', 1);
+
+        $tutorials = $query->orderByDesc('t.tanggal_terbit')
+                           ->offset(($currentPage - 1) * $perPage)
+                           ->limit($perPage)
+                           ->get()
+                           ->map(fn($t) => [
+                               'slug'        => $t->slug,
+                               'title'       => $t->judul,
+                               'category'    => $t->category,
+                               'author'      => $t->author,
+                               'read_time'   => $t->waktu_baca_menit . ' min read',
+                               'description' => '',
+                           ])->toArray();
 
         return view('tutorials.index', [
-            'tutorials'   => $data['data']        ?? [],
-            'total'       => $data['total']        ?? 0,
-            'currentPage' => $data['page']         ?? 1,
-            'totalPages'  => $data['total_pages']  ?? 0,
-            'categories'  => $categories,
-            'filters'     => $request->only(['search', 'category', 'author']),
+            'tutorials'   => $tutorials,
+            'total'       => $total,
+            'currentPage' => $currentPage,
+            'totalPages'  => ceil($total / $perPage),
+            'filters'     => $request->only(['search', 'category']),
         ]);
     }
 
-    // ── Halaman detail tutorial ──────────────────────────────
     public function show(string $slug)
-    {
-        try {
-            $response = Http::timeout(10)->get("{$this->apiBase}/tutorials/{$slug}");
+{
+    $tutorial = DB::table('tutorial as t')
+                  ->leftJoin('tutorial_author as a', 't.author_id', '=', 'a.author_id')
+                  ->leftJoin('topik as tp', 't.topik_id', '=', 'tp.topik_id')
+                  ->select('t.*', 'a.nama_author as author', 'tp.nama_topik as category')
+                  ->where('t.slug', $slug)
+                  ->first();
 
-            if ($response->status() === 404) {
-                abort(404, 'Tutorial tidak ditemukan');
-            }
+    if (!$tutorial) abort(404);
+    $tutorial = (array) $tutorial;
 
-            $tutorial = $response->json();
-        } catch (\Exception $e) {
-            abort(503, 'Gagal terhubung ke API');
-        }
+    try {
+        $response = \Illuminate\Support\Facades\Http::timeout(10)
+                    ->withHeaders(['User-Agent' => 'Mozilla/5.0'])
+                    ->get($tutorial['url']);
 
-        return view('tutorials.show', compact('tutorial'));
+        $html = $response->body();
+        preg_match('/<article[^>]*>(.*?)<\/article>/si', $html, $match);
+        $content = $match[1] ?? '';
+        $content = strip_tags($content, '<h1><h2><h3><p><ul><ol><li><strong><em><code><pre><a><table><tr><td><th>');
+        $tutorial['content'] = trim($content);
+    } catch (\Exception $e) {
+        $tutorial['content'] = '';
     }
 
-    // ── Trigger scraping (dari tombol admin) ─────────────────
-    public function scrape(Request $request)
-    {
-        $max = $request->input('max_tutorials', 350);
+    return view('tutorials.show', compact('tutorial'));
+}
 
-        try {
-            $response = Http::timeout(10)->post("{$this->apiBase}/scrape", [
-                'max_tutorials' => (int) $max,
-            ]);
-            $result = $response->json();
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal terhubung ke Python API: ' . $e->getMessage());
-        }
-
-        if ($result['success'] ?? false) {
-            return back()->with('success', 'Scraping dimulai! Cek status di halaman status.');
-        }
-
-        return back()->with('error', $result['message'] ?? 'Gagal memulai scraping');
-    }
-
-    // ── Cek status scraping (AJAX polling) ──────────────────
-    public function status()
-    {
-        try {
-            $response = Http::timeout(5)->get("{$this->apiBase}/status");
-            return response()->json($response->json());
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'API tidak bisa dihubungi'], 503);
-        }
-    }
+    public function scrape(Request $request) { return back(); }
+    public function status() { return response()->json([]); }
 }
