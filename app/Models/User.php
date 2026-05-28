@@ -9,9 +9,16 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    protected $primaryKey = 'user_id';
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+
+    public function enrollments() {
+        return $this->hasMany(Enrollment::class, 'user_id');
+    }
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -47,9 +54,6 @@ class User extends Authenticatable
     }
     public function savedTools() {
     return $this->belongsToMany(Tool::class, 'saved_tools');
-}
-public function enrollments() {
-    return $this->hasMany(Enrollment::class);
 }
 
 public function lessonProgress() {

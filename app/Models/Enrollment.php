@@ -11,8 +11,9 @@ class Enrollment extends Model {
         'completed_at' => 'datetime',
     ];
 
+
     public function user() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function course() {
