@@ -10,7 +10,6 @@
         .sidebar-link { display:flex; align-items:center; gap:10px; padding:8px 16px; border-radius:8px; font-size:14px; color:#444; cursor:pointer; text-decoration:none; }
         .sidebar-link:hover { background:#f0f0f0; }
         .sidebar-link.active { background:#e8f5e9; color:#1a7a3a; font-weight:500; }
-        .sidebar-link svg { width:18px; height:18px; opacity:0.6; }
         .card { background:white; border:1px solid #e8e8e8; border-radius:12px; }
         .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
         .filter-btn { padding:6px 14px; border-radius:999px; font-size:13px; border:1px solid #e0e0e0; background:white; cursor:pointer; color:#444; text-decoration:none; display:inline-block; }
@@ -73,18 +72,19 @@
 
             @php
                 $projects = [
-                    ['title' => 'Cleaning Data with Generative AI', 'level' => 'Basic', 'color' => '#03EF62', 'desc' => 'Use generative AI to tackle data cleaning, fixing duplicates, nulls, and formatting for consistent, high-quality datasets.'],
-                    ['title' => 'Data Storytelling Case Study: College Majors', 'level' => 'Basic', 'color' => '#03EF62', 'desc' => 'Data storytelling is a high-demand skill that combines technical analysis with compelling narrative.'],
-                    ['title' => 'Data Storytelling Case Study: Green Businesses', 'level' => 'Basic', 'color' => '#03EF62', 'desc' => 'Practice data storytelling using real-world scenarios about sustainable businesses.'],
-                    ['title' => 'Analyzing Students Mental Health', 'level' => 'Basic', 'color' => '#f59e0b', 'desc' => 'Explore and analyze student mental health data to uncover trends and patterns.'],
-                    ['title' => 'Predicting Credit Card Approvals', 'level' => 'Intermediate', 'color' => '#3b82f6', 'desc' => 'Build a machine learning model to predict whether a credit card application will be approved.'],
-                    ['title' => 'Hypothesis Testing in Healthcare', 'level' => 'Intermediate', 'color' => '#3b82f6', 'desc' => 'Apply hypothesis testing techniques to real-world healthcare data.'],
+                    ['slug' => 'cleaning-data-generative-ai',        'title' => 'Cleaning Data with Generative AI',               'level' => 'Basic',        'color' => '#03EF62', 'desc' => 'Use generative AI to tackle data cleaning, fixing duplicates, nulls, and formatting for consistent, high-quality datasets.'],
+                    ['slug' => 'data-storytelling-college-majors',   'title' => 'Data Storytelling Case Study: College Majors',   'level' => 'Basic',        'color' => '#03EF62', 'desc' => 'Data storytelling is a high-demand skill that combines technical analysis with compelling narrative.'],
+                    ['slug' => 'data-storytelling-green-businesses', 'title' => 'Data Storytelling Case Study: Green Businesses', 'level' => 'Basic',        'color' => '#03EF62', 'desc' => 'Practice data storytelling using real-world scenarios about sustainable businesses.'],
+                    ['slug' => 'analyzing-students-mental-health',   'title' => 'Analyzing Students Mental Health',              'level' => 'Basic',        'color' => '#f59e0b', 'desc' => 'Explore and analyze student mental health data to uncover trends and patterns.'],
+                    ['slug' => 'predicting-credit-card-approvals',   'title' => 'Predicting Credit Card Approvals',              'level' => 'Intermediate', 'color' => '#3b82f6', 'desc' => 'Build a machine learning model to predict whether a credit card application will be approved.'],
+                    ['slug' => 'hypothesis-testing-healthcare',      'title' => 'Hypothesis Testing in Healthcare',              'level' => 'Intermediate', 'color' => '#3b82f6', 'desc' => 'Apply hypothesis testing techniques to real-world healthcare data.'],
                 ];
             @endphp
 
             <div class="grid grid-cols-3 gap-4">
                 @foreach($projects as $project)
-                <div class="card p-5 hover:shadow-md transition-shadow">
+                <div class="card p-5 hover:shadow-md transition-shadow cursor-pointer"
+                     onclick="window.location='{{ route('real-world-project.show', $project['slug']) }}'">
                     <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">PROJECT</p>
                     <h3 class="text-base font-bold text-gray-900 mb-3">{{ $project['title'] }}</h3>
                     <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ $project['desc'] }}</p>
@@ -93,7 +93,11 @@
                             <div class="w-3 h-3 rounded-full" style="background:{{ $project['color'] }}"></div>
                             <span class="text-sm text-gray-500">{{ $project['level'] }}</span>
                         </div>
-                        <a href="#" class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-gray-200 hover:bg-gray-50 text-gray-700">Start</a>
+                        <a href="{{ route('real-world-project.show', $project['slug']) }}"
+                           class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-gray-200 hover:bg-gray-50 text-gray-700"
+                           onclick="event.stopPropagation()">
+                            Start
+                        </a>
                     </div>
                 </div>
                 @endforeach

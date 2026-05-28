@@ -134,7 +134,135 @@ Route::middleware('auth')->group(function () {
     Route::get('/tracks',              function () { return view('tracks'); })->name('tracks');
     Route::get('/my-activity', [ActivityController::class, 'index'])->name('my-activity');
     Route::get('/assessments',         function () { return view('assessments'); })->name('assessments');
-    Route::get('/real-world-projects', function () { return view('real-world-projects'); })->name('real-world-projects');
+    Route::get('/real-world-projects', function () { return view('real-world-projects'); })->middleware('auth')->name('real-world-projects');
+
+Route::get('/real-world-projects/{slug}', function ($slug) {
+    $projects = [
+        'cleaning-data-generative-ai' => [
+            'title' => 'Cleaning Data with Generative AI',
+            'level' => 'Basic', 'level_color' => '#03EF62',
+            'updated' => 'December 2025',
+            'duration' => '1 hr', 'exercises' => 5, 'participants' => '12,227', 'xp' => 250,
+            'desc' => 'In this prompt engineering project, you will harness the power of generative AI to tackle one of the most critical tasks in data analytics: data cleaning! Through this hands-on project, you\'ll design AI-driven prompts to identify and address common data issues like duplicates, null values, missing values, inconsistent formatting, and more. Build intelligent workflows to streamline messy datasets and ensure accuracy, consistency, and usability.',
+            'chapters' => [
+                ['title' => 'Cleaning Data', 'locked' => true, 'exercises' => [
+                    'Identifying data cleaning steps', 'Removing duplicate values',
+                    'Filtering out null values', 'Standardizing data formats', 'Splitting columns'
+                ], 'xp_each' => 50],
+            ],
+            'instructors' => [
+                ['name' => 'Jess Ahmet', 'role' => 'Senior Data Analyst', 'bio' => 'Jess is an ex-Curriculum Manager at DataCamp, who has extensive experience in data analytics and education.'],
+                ['name' => 'Alex Kuntz', 'role' => 'Head of Cloud Curriculum', 'bio' => 'Alex is the Head of Cloud Curriculum at DataCamp with expertise in cloud technologies.'],
+            ],
+            'prerequisites' => [],
+            'url' => 'https://app.datacamp.com/learn/projects/2416',
+        ],
+        'data-storytelling-college-majors' => [
+            'title' => 'Data Storytelling Case Study: College Majors',
+            'level' => 'Basic', 'level_color' => '#03EF62',
+            'updated' => 'November 2025',
+            'duration' => '2 hr', 'exercises' => 8, 'participants' => '9,481', 'xp' => 400,
+            'desc' => 'Data storytelling is a high-demand skill that combines technical analysis with compelling narrative. In this project, you\'ll explore a dataset of college majors and their outcomes, then craft a data story that communicates insights clearly and persuasively to different audiences.',
+            'chapters' => [
+                ['title' => 'Exploring the Data', 'locked' => true, 'exercises' => [
+                    'Loading and inspecting the dataset', 'Identifying key variables', 'Summary statistics'
+                ], 'xp_each' => 50],
+                ['title' => 'Building the Narrative', 'locked' => true, 'exercises' => [
+                    'Choosing the right visualizations', 'Crafting insights', 'Telling the story'
+                ], 'xp_each' => 50],
+            ],
+            'instructors' => [
+                ['name' => 'Sara Billen', 'role' => 'Data Storytelling Expert', 'bio' => 'Sara specializes in transforming complex data into compelling visual narratives for business audiences.'],
+            ],
+            'prerequisites' => ['Basic Python or R knowledge'],
+            'url' => 'https://app.datacamp.com/learn/projects/college-majors',
+        ],
+        'data-storytelling-green-businesses' => [
+            'title' => 'Data Storytelling Case Study: Green Businesses',
+            'level' => 'Basic', 'level_color' => '#03EF62',
+            'updated' => 'October 2025',
+            'duration' => '2 hr', 'exercises' => 7, 'participants' => '7,320', 'xp' => 350,
+            'desc' => 'Practice data storytelling using real-world scenarios about sustainable businesses. You\'ll analyze environmental and business metrics to uncover how green practices impact profitability, then present your findings as a compelling data story.',
+            'chapters' => [
+                ['title' => 'Sustainability Metrics', 'locked' => true, 'exercises' => [
+                    'Understanding ESG data', 'Cleaning sustainability datasets', 'Computing key metrics'
+                ], 'xp_each' => 50],
+                ['title' => 'Visualizing Impact', 'locked' => true, 'exercises' => [
+                    'Trend analysis', 'Comparative visualization', 'Final story presentation'
+                ], 'xp_each' => 50],
+            ],
+            'instructors' => [
+                ['name' => 'Maria Lopez', 'role' => 'Sustainability Data Analyst', 'bio' => 'Maria brings 8 years of experience in environmental data analysis and sustainable business consulting.'],
+            ],
+            'prerequisites' => [],
+            'url' => 'https://app.datacamp.com/learn/projects/green-businesses',
+        ],
+        'analyzing-students-mental-health' => [
+            'title' => 'Analyzing Students Mental Health',
+            'level' => 'Basic', 'level_color' => '#f59e0b',
+            'updated' => 'September 2025',
+            'duration' => '1 hr', 'exercises' => 5, 'participants' => '18,540', 'xp' => 250,
+            'desc' => 'Explore and analyze student mental health data to uncover trends and patterns. Using SQL, you\'ll investigate a dataset from a Japanese university to understand how social connectedness, acculturative stress, and length of stay affect mental health scores of international students.',
+            'chapters' => [
+                ['title' => 'Mental Health Analysis', 'locked' => true, 'exercises' => [
+                    'Exploring the dataset', 'Filtering student groups', 'Calculating average scores',
+                    'Identifying correlations', 'Drawing conclusions'
+                ], 'xp_each' => 50],
+            ],
+            'instructors' => [
+                ['name' => 'Diandra Gordan', 'role' => 'Data Scientist', 'bio' => 'Diandra is a data scientist with a focus on healthcare analytics and mental health research methodologies.'],
+            ],
+            'prerequisites' => ['Introduction to SQL'],
+            'url' => 'https://app.datacamp.com/learn/projects/1569',
+        ],
+        'predicting-credit-card-approvals' => [
+            'title' => 'Predicting Credit Card Approvals',
+            'level' => 'Intermediate', 'level_color' => '#3b82f6',
+            'updated' => 'August 2025',
+            'duration' => '2 hr', 'exercises' => 8, 'participants' => '24,105', 'xp' => 400,
+            'desc' => 'Build a machine learning model to predict whether a credit card application will be approved. Commercial banks receive a lot of applications for credit cards. Many of them get rejected for many reasons, like high loan balances, low income levels, or too many inquiries on an individual\'s credit report. In this project, you will build an automatic credit card approval predictor using machine learning techniques.',
+            'chapters' => [
+                ['title' => 'Data Preparation', 'locked' => true, 'exercises' => [
+                    'Loading the dataset', 'Inspecting the data', 'Handling missing values', 'Preprocessing features'
+                ], 'xp_each' => 50],
+                ['title' => 'Model Building', 'locked' => true, 'exercises' => [
+                    'Splitting the data', 'Training logistic regression', 'Evaluating the model', 'Hyperparameter tuning'
+                ], 'xp_each' => 50],
+            ],
+            'instructors' => [
+                ['name' => 'Carolina Bento', 'role' => 'Machine Learning Engineer', 'bio' => 'Carolina is an ML engineer who specializes in building production-grade machine learning systems for financial applications.'],
+            ],
+            'prerequisites' => ['Supervised Learning with scikit-learn'],
+            'url' => 'https://app.datacamp.com/learn/projects/558',
+        ],
+        'hypothesis-testing-healthcare' => [
+            'title' => 'Hypothesis Testing in Healthcare',
+            'level' => 'Intermediate', 'level_color' => '#3b82f6',
+            'updated' => 'July 2025',
+            'duration' => '2 hr', 'exercises' => 8, 'participants' => '11,980', 'xp' => 400,
+            'desc' => 'Apply hypothesis testing techniques to real-world healthcare data. In this project, you\'ll investigate whether a pharmaceutical company\'s drug leads to adverse reactions, performing statistical tests to determine significance and drawing conclusions that could impact patient safety and business decisions.',
+            'chapters' => [
+                ['title' => 'Setting Up Hypotheses', 'locked' => true, 'exercises' => [
+                    'Understanding the dataset', 'Defining null and alternative hypotheses', 'Choosing the right test'
+                ], 'xp_each' => 50],
+                ['title' => 'Running the Tests', 'locked' => true, 'exercises' => [
+                    'Performing z-test', 'Chi-square test', 'Interpreting p-values', 'Drawing conclusions'
+                ], 'xp_each' => 50],
+            ],
+            'instructors' => [
+                ['name' => 'James Chapman', 'role' => 'Biostatistician', 'bio' => 'James has 10+ years of experience applying statistical methods in pharmaceutical and clinical research.'],
+            ],
+            'prerequisites' => ['Introduction to Statistics', 'Introduction to Python'],
+            'url' => 'https://app.datacamp.com/learn/projects/1584',
+        ],
+    ];
+
+    if (!isset($projects[$slug])) abort(404);
+    $project = $projects[$slug];
+    $project['slug'] = $slug;
+    return view('real-world-project-detail', compact('project'));
+})->middleware('auth')->name('real-world-project.show');
+
     Route::get('/code-alongs',         function () { return view('code-alongs'); })->name('code-alongs');
 
     //practice
