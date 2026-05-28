@@ -15,7 +15,6 @@ class CourseController extends Controller
     {
         $query = Course::query();
 
-        // Map nama topik → topik_id
         $topicMap = [
             'python' => 33, 'sql' => 35, 'r' => 34, 'power bi' => 31,
             'tableau' => 41, 'alteryx' => 5, 'excel' => 15,
@@ -32,7 +31,6 @@ class CourseController extends Controller
             'dvc' => 12, 'ai & llm' => 1, 'ai copilot' => 2,
         ];
 
-        // Search
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('title', 'like', '%'.$request->search.'%')
@@ -42,7 +40,6 @@ class CourseController extends Controller
             });
         }
 
-        // Filter by topic → topik_id
         if ($request->topic && $request->topic !== 'all') {
             $topicKey = strtolower($request->topic);
             if (isset($topicMap[$topicKey])) {
@@ -50,44 +47,47 @@ class CourseController extends Controller
             }
         }
 
-        // Filter difficulty
         if ($request->difficulty) {
             $query->where('difficulty', $request->difficulty);
         }
 
-        // Sort
         $sort = $request->sort ?? 'popular';
         if ($sort === 'popular') $query->orderByDesc('students_count');
         elseif ($sort === 'rating') $query->orderByDesc('rating');
         elseif ($sort === 'newest') $query->orderByDesc('created_at');
 
-        $courses = $query->with('level')->paginate(12);        $categories = Course::distinct()->pluck('category');
+        $courses = $query->with('level')->paginate(12);
+        $categories = Course::distinct()->pluck('category');
 
         return view('courses', compact('courses', 'categories'));
     }
 
-<<<<<<< HEAD
-    public function show($slug) {
-        $course = Course::with(['lessons', 'instruktur', 'level'])->where('slug', $slug)->firstOrFail();
-=======
     public function show($slug)
     {
-        $course = Course::with('lessons')->where('slug', $slug)->firstOrFail();
+        $course = Course::with(['lessons', 'instruktur', 'level'])->where('slug', $slug)->firstOrFail();
 
->>>>>>> d0d01e7 (Update lagi lagi)
-        $enrollment = null;
+        $totalLessons   = $course->lessons->count();
+        $totalMinutes   = $course->lessons->sum('duration_minutes');
+        $totalHours     = $totalMinutes > 0 ? round($totalMinutes / 60, 1) : 0;
+
+        $course->total_lessons  = $totalLessons;
+        $course->duration_hours = $totalHours;
+
+        $enrollment       = null;
         $completedLessons = collect();
-        $isEnrolled = false;
+        $isEnrolled       = false;
 
         if (Auth::check()) {
-            $enrollment = Enrollment::where('user_id', Auth::id())
-                         ->where('course_id', $course->id)
+            $userId = Auth::user()->user_id;
+
+            $enrollment = Enrollment::where('user_id', $userId)
+                         ->where('course_id', $course->course_id)
                          ->first();
 
             $isEnrolled = $enrollment ? true : false;
 
             if ($enrollment) {
-                $completedLessons = LessonProgress::where('user_id', Auth::id())
+                $completedLessons = LessonProgress::where('user_id', $userId)
                                    ->whereIn('lesson_id', $course->lessons->pluck('id'))
                                    ->where('is_completed', true)
                                    ->pluck('lesson_id');
@@ -104,20 +104,28 @@ class CourseController extends Controller
         }
 
         $course = Course::findOrFail($id);
+        $user   = Auth::user();
+        $userId = $user->user_id;
 
-        $existing = Enrollment::where('user_id', Auth::id())
-                    ->where('course_id', $course->id)->first();
+        $existing = Enrollment::where('user_id', $userId)
+                    ->where('course_id', $course->course_id)->first();
 
         if (!$existing) {
             Enrollment::create([
-                'user_id'   => Auth::id(),
-                'course_id' => $course->id,
+                'user_id'   => $userId,
+                'course_id' => $course->course_id,
                 'progress'  => 0,
             ]);
+
             $course->increment('students_count');
+
+            DB::table('users')
+                ->where('user_id', $userId)
+                ->increment('xp', 50);
         }
 
-        return redirect()->route('course.learn', $course->slug);
+        return redirect()->route('course.learn', $course->slug)
+               ->with('message', '🎉 Welcome! +50 XP earned!');
     }
 
     public function learn($slug)
@@ -126,50 +134,72 @@ class CourseController extends Controller
             return redirect()->route('login');
         }
 
-        $course = Course::with(['lessons', 'instruktur'])->where('slug', $slug)->firstOrFail();
+        $course = Course::with(['lessons' => function($q) {
+            $q->orderBy('order');
+        }, 'instruktur'])->where('slug', $slug)->firstOrFail();
 
-        $enrollment = Enrollment::where('user_id', Auth::id())
-                     ->where('course_id', $course->id)
-                     ->firstOrFail();
+        $user   = Auth::user();
+        $userId = $user->user_id;
 
-        $completedLessons = LessonProgress::where('user_id', Auth::id())
+        $enrollment = Enrollment::where('user_id', $userId)
+                     ->where('course_id', $course->course_id)
+                     ->first();
+
+        if (!$enrollment) {
+            $enrollment = Enrollment::create([
+                'user_id'   => $userId,
+                'course_id' => $course->course_id,
+                'progress'  => 0,
+            ]);
+            $course->increment('students_count');
+
+            DB::table('users')
+                ->where('user_id', $userId)
+                ->increment('xp', 50);
+        }
+
+        $completedLessons = LessonProgress::where('user_id', $userId)
                            ->whereIn('lesson_id', $course->lessons->pluck('id'))
                            ->where('is_completed', true)
                            ->pluck('lesson_id');
 
-        $firstLesson = $course->lessons->first();
+        $firstLesson  = $course->lessons->first();
+        $totalLessons = $course->lessons->count();
+        $totalMinutes = $course->lessons->sum('duration_minutes');
+        $totalHours   = $totalMinutes > 0 ? round($totalMinutes / 60, 1) : 0;
 
-        return view('course-learn', compact('course', 'enrollment', 'completedLessons', 'firstLesson'));
+        return view('course-learn', compact(
+            'course', 'enrollment', 'completedLessons', 'firstLesson',
+            'totalLessons', 'totalHours'
+        ));
     }
 
-    // ✅ Satu completeLesson — XP & streak dihandle TRIGGER MySQL
     public function completeLesson(Request $request, $lessonId)
     {
-        $user = Auth::user();
+        $userId = Auth::user()->user_id;
 
-        $progress = LessonProgress::firstOrCreate(
-            ['user_id' => $user->id, 'lesson_id' => $lessonId],
-            ['is_completed' => 0]
-        );
+        // Cek apakah sudah completed
+        $alreadyDone = LessonProgress::where('user_id', $userId)
+                                     ->where('lesson_id', $lessonId)
+                                     ->where('is_completed', true)
+                                     ->exists();
 
-        // Kalau sudah completed, tidak perlu update lagi
-        if ($progress->is_completed) {
+        if ($alreadyDone) {
             return back()->with('message', 'Pelajaran ini sudah selesai sebelumnya.');
         }
 
-        // ✅ Update is_completed → trigger after_lesson_completed otomatis jalan
-        // Trigger akan: tambah XP +10, update streak & last_activity di tabel users
-        $progress->update([
-            'is_completed' => 1,
-            'completed_at' => now(),
-        ]);
+        // Pakai updateOrCreate — tidak butuh save(), tidak akan error 'id'
+        LessonProgress::updateOrCreate(
+            ['user_id' => $userId, 'lesson_id' => $lessonId],
+            ['is_completed' => true, 'completed_at' => now()]
+        );
 
-        // Update progress enrollment
-        $lesson = \App\Models\Lesson::findOrFail($lessonId);
-        $course = $lesson->course;
+        // Hitung progress course
+        $lesson       = \App\Models\Lesson::findOrFail($lessonId);
+        $course       = $lesson->course;
         $totalLessons = $course->lessons()->count();
 
-        $completedCount = LessonProgress::where('user_id', $user->id)
+        $completedCount = LessonProgress::where('user_id', $userId)
                          ->whereIn('lesson_id', $course->lessons->pluck('id'))
                          ->where('is_completed', true)
                          ->count();
@@ -178,13 +208,30 @@ class CourseController extends Controller
             ? round(($completedCount / $totalLessons) * 100)
             : 0;
 
-        Enrollment::where('user_id', $user->id)
-                  ->where('course_id', $course->id)
+        Enrollment::where('user_id', $userId)
+                  ->where('course_id', $course->course_id)
                   ->update(['progress' => $progressPercent]);
 
-        // Fresh user untuk ambil XP terbaru hasil trigger
-        $updatedUser = $user->fresh();
+        // Tambah XP +10
+        DB::table('users')
+            ->where('user_id', $userId)
+            ->increment('xp', 10);
 
-        return back()->with('message', "Pelajaran selesai! +10 XP · Total: {$updatedUser->xp} XP 🎉");
+        // Update streak
+        $user      = Auth::user()->fresh();
+        $today     = now()->toDateString();
+        $yesterday = now()->subDay()->toDateString();
+
+        if (!$user->last_activity || $user->last_activity->toDateString() != $today) {
+            if ($user->last_activity && $user->last_activity->toDateString() == $yesterday) {
+                $user->increment('streak');
+            } else {
+                $user->streak = 1;
+            }
+            $user->last_activity = now();
+            $user->save();
+        }
+
+        return back()->with('message', 'Pelajaran selesai! +10 XP 🎉');
     }
 }

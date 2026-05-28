@@ -118,7 +118,7 @@
                         <h3 class="text-gray-900 font-semibold mb-1">Meet DataLab</h3>
                         <p class="text-sm text-gray-500 max-w-lg">An AI-powered cloud notebook for Python, R, and SQL. Analyze data, visualize results, and share reports — all from your browser.</p>
                     </div>
-                    <a href="{{ route('practice') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0 ml-4">
+                    <a href="{{ route('practice.index') }}" class="border border-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg hover:border-gray-400 shrink-0 ml-4">
                         Create Workbook
                     </a>
                 </div>
@@ -128,7 +128,7 @@
         {{-- Sandbox Section --}}
         <div>
             <div class="flex items-center justify-between mb-3">
-                <a href="{{ route('practice') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
+                <a href="{{ route('practice.index') }}" class="flex items-center gap-2 text-gray-900 font-semibold hover:text-green-600">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     Sandbox →
                 </a>
@@ -279,8 +279,8 @@
                         <div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
                             {{ strtoupper(substr($u->name, 0, 1)) }}
                         </div>
-                        <span class="flex-1 text-xs text-gray-700 {{ Auth::id()==$u->id ? 'font-semibold' : '' }}">
-                            {{ $u->name }} {{ Auth::id()==$u->id ? '(You)' : '' }}
+                        <span class="flex-1 text-xs text-gray-700 {{Auth::id() == $u->user_id ? 'font-semibold' : '' }}">
+                            {{ $u->name }} {{ Auth::id()==$u->user_id ? '(You)' : '' }}
                         </span>
                         <span class="text-xs text-gray-500">{{ $u->xp ?? 0 }} XP</span>
                     </div>

@@ -27,7 +27,7 @@ class HomeController extends Controller
         $topUsers = DB::select('CALL GetLeaderboard(5)');
 
         // ✅ Pakai Stored Procedure: GetUserXPSummary(user_id)
-        $xpSummary = DB::select('CALL GetUserXPSummary(?)', [$user->id]);
+        $xpSummary = DB::select('CALL GetUserXPSummary(?)', [$user->user_id]);
         $xpSummary = $xpSummary[0] ?? null;
 
         $xpPercent = $xpSummary?->xp_percent ?? 0;

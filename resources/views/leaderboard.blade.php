@@ -92,7 +92,7 @@
                     <p class="text-sm font-medium text-gray-900 {{ $user->id === $currentUser->id ? 'font-semibold' : '' }}">
                         {{ $user->name }}
                         @if($user->id === $currentUser->id)
-                            <span class="ml-1 text-xs text-green-600">(you)</span>
+                            <span class="ml-1 text-xs text-green-600"></span>
                         @endif
                     </p>
                 </div>

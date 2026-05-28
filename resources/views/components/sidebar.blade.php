@@ -43,7 +43,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
             Courses
         </a>
-        <a href="{{ route('practice') }}" class="sidebar-link {{ request()->routeIs('practice') ? 'active' : '' }}">
+        <a href="{{ route('practice.index') }}" class="sidebar-link {{ request()->routeIs('practice.index') ? 'active' : '' }}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Practice
         </a>

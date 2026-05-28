@@ -101,7 +101,7 @@
             </a>
 
             {{-- PRACTICE --}}
-            <a href="{{ route('practice') }}" class="card p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
+            <a href="{{ route('practice.index') }}" class="card p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
                 <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 </div>
@@ -155,8 +155,8 @@
                     <div class="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
                         {{ strtoupper(substr($u->name, 0, 1)) }}
                     </div>
-                    <span class="flex-1 text-xs text-gray-700 {{ Auth::id() == $u->id ? 'font-semibold' : '' }}">
-                        {{ $u->name }} {{ Auth::id() == $u->id ? '(You)' : '' }}
+                    <span class="flex-1 text-xs text-gray-700 {{ Auth::id() == $u->user_id ? 'font-semibold' : '' }}">
+                        {{ $u->name }} {{ Auth::id() == $u->user_id ? '(You)' : '' }}
                     </span>
                     <span class="text-xs text-gray-500">{{ $u->xp ?? 0 }} XP</span>
                 </div>

@@ -20,6 +20,10 @@ class Course extends Model {
         return $this->attributes['title'] ?? $this->attributes['nama_course'] ?? '';
     }
 
+    public function track() {
+    return $this->belongsTo(Track::class, 'track_id', 'track_id');
+    }
+
     public function level() {
     return $this->belongsTo(\App\Models\Level::class, 'level_id', 'level_id');
     }

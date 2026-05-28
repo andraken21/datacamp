@@ -1,0 +1,52 @@
+# Netscape HTTP Cookie File
+# https://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file! Do not edit.
+
+.datacamp.com	TRUE	/	TRUE	1808812816	dc_anonid	d80d5938-4f37-4b99-84c2-17f188b2ce32
+.datacamp.com	TRUE	/	FALSE	1808812818	dc_consent	{"version":"3.0.0","essential":1,"functional":1,"performance":1,"advertisement":1}
+.datacamp.com	TRUE	/	FALSE	1785052819	_gcl_au	1.1.677860657.1777276819
+.datacamp.com	TRUE	/	FALSE	1814189270	_ga	GA1.1.616922590.1777276819
+.datacamp.com	TRUE	/	FALSE	1814189270	_mkto_trk	id:307-OAT-968&token:_mch-datacamp.com-ef67cf7b63b6b8e073d57f9e35b5cbaa
+.datacamp.com	TRUE	/	TRUE	1814189287	FPID	FPID2.2.ciBFwOv23Olw1Oxx1DmpkMgRksjZKPpQbh4uSlrDguk%3D.1777276819
+.datacamp.com	TRUE	/	TRUE	1785052818	FPAU	1.1.677860657.1777276819
+.datacamp.com	TRUE	/	TRUE	1813819288	_ttp	GVKnzS1rOnO90eMZFe4NsPMalAP
+.datacamp.com	TRUE	/	TRUE	1787405289	_fbp	fb.1.1777276865822.1764326460
+.datacamp.com	TRUE	/	FALSE	1810898596	htjs_user_id	21344029
+.datacamp.com	TRUE	/	FALSE	1810898596	htjs_anonymous_id	7eace554-f0f6-4026-92d7-d95342213069
+.datacamp.com	TRUE	/	FALSE	1808812945	_cioanonid	b8ca409f-51eb-a504-7bf6-0cc387cd3d9c
+.datacamp.com	TRUE	/	FALSE	1808812945	_cioid	21344029
+.datacamp.com	TRUE	/	TRUE	1808812953	ph_phc_9qbXTzAzIQDIqnPx19juk4OGdkTUce0Qqdrb6ZM6NYo_posthog	%7B%22%24device_id%22%3A%22019dcdf4-f4e4-7488-811d-6919c5194648%22%2C%22distinct_id%22%3A%22019dcdf4-f4e4-7488-811d-6919c5194648%22%2C%22%24sesid%22%3A%5B1777276953761%2C%22019dcdf4-f4e9-7dce-a6d0-ea2a57eb6a50%22%2C1777276876007%5D%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22https%3A%2F%2Fwww.datacamp.com%2F%22%2C%22u%22%3A%22https%3A%2F%2Fevents.datacamp.com%2Fagents-in-the-enterprise%22%7D%2C%22%24user_state%22%3A%22anonymous%22%7D
+.datacamp.com	TRUE	/	TRUE	1811165270	_hjSessionUser_2445625	eyJpZCI6IjVmZWVkZGRiLTFlNzMtNTY1OC04NjhkLWZmYmQ3NzllMmE3MyIsImNyZWF0ZWQiOjE3Nzc4NzA0Mzc1NTEsImV4aXN0aW5nIjp0cnVlfQ==
+.datacamp.com	TRUE	/	TRUE	1787405288	_gtmeec-tt	eyJlbWFpbCI6IjNhNjg1NzcxYTU0ZjkwMDQ1OTQyMmZjZDMyZDIyY2E0MmM5YjI3NjMxM2M5MDZlMTg4MzNjZjJhZDMxNzBhZjAiLCJleHRlcm5hbF9pZCI6IjhmMTBkNDE1N2E4NjBmOGI2YmJiYTE4OTYxYzA4YzAwMDg2YzhiNDg1OGI4N2Y3MjdkYjdjMTlkYmNhYWRhYzgifQ%3D%3D
+.datacamp.com	TRUE	/	TRUE	1787405288	_gtmeec	eyJlbSI6IjNhNjg1NzcxYTU0ZjkwMDQ1OTQyMmZjZDMyZDIyY2E0MmM5YjI3NjMxM2M5MDZlMTg4MzNjZjJhZDMxNzBhZjAiLCJleHRlcm5hbF9pZCI6IjhmMTBkNDE1N2E4NjBmOGI2YmJiYTE4OTYxYzA4YzAwMDg2YzhiNDg1OGI4N2Y3MjdkYjdjMTlkYmNhYWRhYzgifQ%3D%3D
+.datacamp.com	TRUE	/	TRUE	1781885240	dc_pricing_currency	USD
+app.datacamp.com	FALSE	/	TRUE	1786027608	NPS_2e86d7de_last_seen	1778251608634
+.datacamp.com	TRUE	/	TRUE	1810898596	_hjSessionUser_1719197	eyJpZCI6IjY1MDZiMzY0LWQ3MWItNWNkNy04ZjY5LWYxOWQ2MDYyZmEwMSIsImNyZWF0ZWQiOjE3NzgzMTU4NjY4NDksImV4aXN0aW5nIjp0cnVlfQ==
+.datacamp.com	TRUE	/	FALSE	1786851485	_gcl_aw	GCL.1779075485.Cj0KCQjwzqXQBhD2ARIsAKrIeU-jriw5RmpIYimhYJAw2hfFuSqUPNwGREly5IBe8jRm15R2qB4Lc1oaAtOXEALw_wcB
+app.datacamp.com	FALSE	/	TRUE	1792041502	NPS_2e86d7de_surveyed	true
+.datacamp.com	TRUE	/	TRUE	1810714538	ph_phc_zmnYqZmMq3BFwzCyDoVUa8PW8RbPDc81OAgRwmSoI4K_posthog	%7B%22%24device_id%22%3A%22019dcdf6-57ef-7b10-a997-445aca70b4e6%22%2C%22distinct_id%22%3A%22019dcdf6-57ef-7b10-a997-445aca70b4e6%22%2C%22%24sesid%22%3A%5B1779178538037%2C%22019e3f4d-696b-71e4-9fe5-8c0b1b1f9ccf%22%2C1779178498409%5D%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22https%3A%2F%2Fwww.datacamp.com%2F%22%2C%22u%22%3A%22https%3A%2F%2Foptima.datacamp.com%2Fintroduction-to-sql%2Flessons%2Fmeet-databases-sql%22%7D%2C%22%24user_state%22%3A%22anonymous%22%7D
+.datacamp.com	TRUE	/	FALSE	1810898596	htjs_sesh	{%22id%22:1779361950328%2C%22expiresAt%22:1779364396140%2C%22timeout%22:1800000%2C%22sessionStart%22:false%2C%22autoTrack%22:true}
+.datacamp.com	TRUE	/	FALSE	1802848880	intercom-id-w7tc5aa0	58a876a2-7527-4f2d-a99a-e0f972c28518
+.datacamp.com	TRUE	/	FALSE	1780123680	intercom-session-w7tc5aa0	
+.datacamp.com	TRUE	/	FALSE	1802848880	intercom-device-id-w7tc5aa0	5debe35d-d174-4e77-9b3f-80346955a77b
+.datacamp.com	TRUE	/	FALSE	1814078956	_ga_39297847	GS2.1.s1779518552$o1$g1$t1779518955$j60$l0$h0
+.datacamp.com	TRUE	/	TRUE	0	_cfuvid	WRgVa7uGlIMaQF0tF3GBjddPnSs8LfNF0mZUrt9lQww-1779628406.6814084-1.0.1.1-6eDXdWjhfQlVVt6RWmytXiL1pdXUMbIcezvMcIj8YIs
+.datacamp.com	TRUE	/	TRUE	0	authentication_token	nSdRtRhyKvesgG2ixLRz
+.datacamp.com	TRUE	/	TRUE	0	dc_logged_in	1
+.datacamp.com	TRUE	/	TRUE	0	_dct	eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL3d3dy5kYXRhY2FtcC5jb20iLCJqdGkiOiIyMTM0NDAyOS1jMjM4MTZkMjVmZjRlODg2MjJhMzZhZmM2YTJiZWRmNGI3ZDdjNTdlMDJiOTQwNjc0ODA4ODdiYmNkZWMiLCJ1c2VyX2lkIjoyMTM0NDAyOSwiZXhwIjoxNzg3NTc3MjA5fQ.RlJDB-jdGsytTsjRsp1WhuNO9P6nMvNNX3d7aqn-i5w5YvN3ZgSO2ZdP5RvyJSZtSFRm8qsnT_3lFrX8oVPC4XO4fZibGn98xUxcVmbVDUJpE8CyBCUOWCTsM0D1bwDK3i2jP6kr3Tz-dUOwLbBM8tL8w09ULeNFpAS7n-nIQAz8oiZ4B5RO-dwh5neOPZxzgcNFRv5gnjByDInZNRQ-i896siSBtyc6ZIZIEM6sxcxHhKCW3RuLTvdpG5cTFJWn1Qj3Efb8vZpbfm5Myyq1xNc2ACDZg71XM6RKtle7UKPzfCkD6WX78M-kd1UDrND1iVgrCsFVTcjb1tP4SamtfA
+.datacamp.com	TRUE	/	FALSE	0	IR_gbd	datacamp.com
+.datacamp.com	TRUE	/	TRUE	1779700416	FPLC	5XJe4kqeNxpOFoGQ%2FRoRC0%2Fz67xmWr9pUwWajpsxn%2FiNV7KiwtQKHmYKpGGLp4lLxRAHpDfyTM6JHRml6FidWJ9Yilss5qZI9NfjcPeQEbh78QakUenYWyjhWJnk1w%3D%3D
+.datacamp.com	TRUE	/	TRUE	1779631086	_hp2_ses_props.4292810930	%7B%22ts%22%3A1779628414693%2C%22d%22%3A%22www.datacamp.com%22%2C%22h%22%3A%22%2F%22%7D
+.datacamp.com	TRUE	/	TRUE	1779631064	__cf_bm	cyDywLBkAzf9PUyYHkBJ36WGen5iNBCW6.6JrJdg2nE-1779629263.8843644-1.0.1.1-tH0CIrtpSxAhGg90_bajxrQAsjrglQ70TGPvE9B0hz3y.SF_vWyuNOHWe8gwTTIi9uClcpVplUNE143doXCcM5Oj0mNsK.DOPnd.MYO2mA4tHOrCj0Al93VIQucKyNmj
+.datacamp.com	TRUE	/	TRUE	1779631114	_hjSession_2445625	eyJpZCI6IjVmMjI3ZTIyLTdhYjYtNGI5Yi04MDA0LTE2MTdhOTQyZTk3ZSIsImMiOjE3Nzk2MjkyNzAzMDksInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjowLCJzcCI6MH0=
+app.datacamp.com	FALSE	/	TRUE	0	_hjHasCachedUserAttributes	true
+.datacamp.com	TRUE	/	FALSE	1779715670	_uetsid	afb852c0565b11f18202add01cae281e
+.datacamp.com	TRUE	/	FALSE	1813325270	_uetvid	ca8cf280491b11f19ecbf720f2ef7848
+.datacamp.com	TRUE	/	TRUE	1813706886	_hp2_props.4292810930	%7B%22Browser%20Language%22%3A%22id-ID%22%2C%22Browser%20Languages%22%3A%22id-ID%2Cid%2Cen-US%2Cen%22%2C%22Signed%20In%22%3A%22true%22%2C%22Promo%20Active%22%3A%22true%22%2C%22Active%20Promos%22%3A%22may_2026%22%2C%22User%20Language%22%3A%22en-US%22%7D
+.datacamp.com	TRUE	/	TRUE	1779630217	FPGSID	1.1779628416.1779629270.G-0VFSSYW4KG.TCMZE7n_RNKqEVnutuWpIw
+.datacamp.com	TRUE	/	TRUE	0	IR_13294	1779629270589%7C0%7C1779629270589%7C%7C
+.datacamp.com	TRUE	/	TRUE	1814189271	IR_PI	21976aa0-420f-11f1-8ef2-f15f6babab9d%7C1779629270589
+.datacamp.com	TRUE	/	FALSE	1814189287	_ga_0VFSSYW4KG	GS2.1.s1779628413$o80$g1$t1779629286$j36$l1$h1825590150
+.datacamp.com	TRUE	/	TRUE	1813706886	_hp2_id.4292810930	%7B%22userId%22%3A%223533146330964202%22%2C%22pageviewId%22%3A%228399588000609684%22%2C%22sessionId%22%3A%226988222119101682%22%2C%22identity%22%3A%2221344029%22%2C%22trackerVersion%22%3A%224.0%22%2C%22identityField%22%3Anull%2C%22isIdentified%22%3A1%7D
+app.datacamp.com	FALSE	/	FALSE	1779630214	_dd_s	rum=0&expire=1779630203066
+.datacamp.com	TRUE	/	TRUE	1811165264	cf_clearance	AuY4Ryd5hM1FwbuNJL.7PJYPVfjYPEC4DBkd94A2t6k-1779629263-1.2.1.1-5uYCzYPXZKGel_X29akKZR26RjfgCIqMSUcaV_J.ielVpLk9Bxkvy2JA2kyoi5.xXCdCsGsQc1vUCcrkalfIQv0u7mNap38reMqyUKSCbgp1nYzw_Kn4uOS3K9PbOgj3ZL7lg2hJP2_QD8foS1iZBJrcRtVkyflYU_4ZcleqcSKIh6xmo.5831DixAMh7h3.cfMDYq6XBDxz9ze5uCq3R6.NYfRmQ6hl.GbESUNzOgsS9PACvUwUyvdP.AQWD3EtHQ8rkoIqDh1y8V4YiJac3BJg0kNoJqVsK.w1eyBNeJ_IJwlfDMlJyvHEH405QxfX1emJOUF76OOCv7d78C0JRg
